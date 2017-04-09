@@ -3,6 +3,13 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
     <string name="action_settings">Settings</string>
+
+
+    <!--Drawer-->
+    <string name="drawer_menu_localization">Lokalizacja</string>
+
+    <!--    Permissions    -->
+    <string name="location_permission_denied">This app requires location permission to show your location on map. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'eTraction\'.</string>
+    <string name="permission_required_toast">Location permission is required for this app.</string>
 </resources>
