@@ -27,6 +27,8 @@ import com.google.android.gms.maps.model.LatLng;
 
 import pl.poznan.put.etraction.permission.PermissionUtils;
 
+
+//TODO: Pierwsze wejście czasami chrupie. Sprawdzić czy da się to jakoś zoptymalizować.
 /**
  * Shows the Google Maps.
  * Created by Marcin on 07.04.2017.
