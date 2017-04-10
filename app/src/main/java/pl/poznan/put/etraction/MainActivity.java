@@ -1,6 +1,7 @@
 package pl.poznan.put.etraction;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -11,7 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, FragmentManager.OnBackStackChangedListener {
 
     private int mLastSelectedDrawerPosition;
 
@@ -29,6 +30,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
     }
 
     @Override
@@ -65,21 +68,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         if (id != mLastSelectedDrawerPosition) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             if (id == R.id.nav_localization) {
-                fragmentManager.beginTransaction().replace(R.id.content_frame, new LocalizationFragment()).commit();
+                fragmentManager.beginTransaction().replace(R.id.content_frame, new LocalizationFragment()).addToBackStack("fragBack").commit();
             } else if (id == R.id.nav_gallery) {
 
             }
             mLastSelectedDrawerPosition = id;
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0)
+            mLastSelectedDrawerPosition = -1;
     }
 }

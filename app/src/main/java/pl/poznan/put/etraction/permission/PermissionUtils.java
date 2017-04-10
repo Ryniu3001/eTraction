@@ -23,7 +23,7 @@ public abstract class PermissionUtils {
      * Requests the fine location permission. If a rationale with an additional explanation should
      * be shown to the user, displays a dialog that triggers the request.
      */
-    public static void requestPermission(Fragment fragment, int requestId, String permission, boolean finishActivity) {
+    public static void requestPermission(Fragment fragment, int requestId, String permission) {
         fragment.requestPermissions(new String[]{permission}, requestId);
     }
 
