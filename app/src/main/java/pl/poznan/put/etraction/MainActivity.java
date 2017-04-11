@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             FragmentManager fragmentManager = getSupportFragmentManager();
             if (id == R.id.nav_localization) {
                 fragmentManager.beginTransaction().replace(R.id.content_frame, new LocalizationFragment()).addToBackStack("fragBack").commit();
-            } else if (id == R.id.nav_gallery) {
+            } else if (id == R.id.nav_statements) {
 
             }
             mLastSelectedDrawerPosition = id;

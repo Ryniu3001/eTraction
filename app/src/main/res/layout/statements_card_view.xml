@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/card_view"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        card_view:cardCornerRadius="6dp"
+        card_view:contentPadding="4dp"
+        card_view:cardElevation="4dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_statement_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="4dp"
+                android:textColor="@color/textColorPrimary"
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-medium"
+                tools:text="Jakiś przykładowy tytuł" />
+            <TextView
+                android:id="@+id/tv_statement_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="4dp"
+                android:textColor="@color/textColorSecondary"
+                android:textSize="10sp"
+                android:fontFamily="sans-serif-light"
+                tools:text="10.12.2016 15:26"/>
+            <TextView
+                android:id="@+id/tv_statement_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textColorPrimary"
+                android:fontFamily="sans-serif"
+                tools:text="At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est "/>
+
+        </LinearLayout>
+
+
+</android.support.v7.widget.CardView>
