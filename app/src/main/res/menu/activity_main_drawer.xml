@@ -8,7 +8,7 @@
             android:title="@string/drawer_menu_localization" />
         <item
             android:id="@+id/nav_statements"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/ic_menu_statement"
             android:title="@string/drawer_menu_statements" />
         <item
             android:id="@+id/nav_slideshow"

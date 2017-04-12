@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.text.DateFormat;
 import java.util.List;
 
 import pl.poznan.put.etraction.model.StatementMsg;
@@ -23,18 +24,38 @@ public class StatementsAdapter extends RecyclerView.Adapter<StatementsAdapter.St
         mStatementsList = statementsList;
     }
 
+    /**
+     * This gets called when each new ViewHolder is created. This happens when the RecyclerView
+     * is laid out. Enough ViewHolders will be created to fill the screen and allow for scrolling.
+     * @param parent The ViewGroup that these ViewHolders are contained within.
+     * @param viewType If your RecyclerView has more than one type of item you
+     *                  can use this viewType integer to provide a different layout
+     * @return
+     */
     @Override
     public StatementsAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         Context context = parent.getContext();
-        int layoutIdForItem = R.layout.statements_card_view;
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(layoutIdForItem, parent, false);
+        View view = inflater.inflate(R.layout.statements_card_view, parent, false);
         return new StatementsAdapterViewHolder(view);
     }
 
+    /**
+     * OnBindViewHolder is called by the RecyclerView to display the data at the specified
+     * position. In this method, we update the contents of the ViewHolder to display the statement
+     * for this particular position, using the "position" argument that is conveniently
+     * passed into us.
+     * @param holder The ViewHolder which should be updated to represent the contents of the item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
     @Override
     public void onBindViewHolder(StatementsAdapterViewHolder holder, int position) {
+        StatementMsg statementMsg = mStatementsList.get(position);
+        holder.mTitle.setText(statementMsg.getTitle());
+        String dateTime = DateFormat.getDateTimeInstance().format(statementMsg.getDateTime());
+        holder.mDateTime.setText(dateTime);
+        holder.mContent.setText(statementMsg.getContent());
 
     }
 

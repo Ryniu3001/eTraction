@@ -1,8 +1,10 @@
 package pl.poznan.put.etraction;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -12,14 +14,17 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, FragmentManager.OnBackStackChangedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private int mLastSelectedDrawerPosition;
+    public static Context appContext;
+    private int mCurrentDrawerPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        appContext = this.getApplicationContext();
         setContentView(R.layout.activity_main);
+        navigateToHomeFragment();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -31,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        getSupportFragmentManager().addOnBackStackChangedListener(this);
     }
 
     @Override
@@ -40,7 +44,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            //If we are not in home fragment then navigate to it
+            if (mCurrentDrawerPosition != R.id.nav_statements)
+                navigateToHomeFragment();
+            else
+                super.onBackPressed();
         }
     }
 
@@ -70,24 +78,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
-        if (id != mLastSelectedDrawerPosition) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            if (id == R.id.nav_localization) {
-                fragmentManager.beginTransaction().replace(R.id.content_frame, new LocalizationFragment()).addToBackStack("fragBack").commit();
-            } else if (id == R.id.nav_statements) {
-
-            }
-            mLastSelectedDrawerPosition = id;
+        mCurrentDrawerPosition = item.getItemId();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment fragmentClass = null;
+        if (mCurrentDrawerPosition == R.id.nav_localization) {
+            fragmentClass = new LocalizationFragment();
+        } else if (mCurrentDrawerPosition == R.id.nav_statements) {
+            fragmentClass = new StatementsFragment();
         }
+
+        if (fragmentClass != null)
+            fragmentManager.beginTransaction().replace(R.id.content_frame, fragmentClass).commit();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    @Override
-    public void onBackStackChanged() {
-        if (getSupportFragmentManager().getBackStackEntryCount() == 0)
-            mLastSelectedDrawerPosition = -1;
+    private void navigateToHomeFragment(){
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new StatementsFragment()).commit();
+        mCurrentDrawerPosition = R.id.nav_statements;
     }
 }

@@ -9,6 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import pl.poznan.put.etraction.model.StatementMsg;
+
 /**
  * Created by Marcin on 11.04.2017.
  */
@@ -16,6 +22,7 @@ import android.view.ViewGroup;
 public class StatementsFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
+    private StatementsAdapter mStatementsAdapter;
 
     @Nullable
     @Override
@@ -34,8 +41,31 @@ public class StatementsFragment extends Fragment {
          */
         mRecyclerView.setHasFixedSize(false);
 
+        mStatementsAdapter = new StatementsAdapter();
+        mRecyclerView.setAdapter(mStatementsAdapter);
 
+        //TODO: Progrss bar os sth indicating loading time
 
+        loadData();
+    }
 
+    private void loadData(){
+        List<StatementMsg> statementMsgList = new ArrayList<>();
+        StatementMsg msg1 = new StatementMsg();
+        msg1.setId(1);
+        msg1.setTitle("Awaria pociągu");
+        msg1.setDateTime(new Date());
+        msg1.setContent("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque dictum tristique commodo. Vivamus pharetra finibus velit, et aliquam nunc sollicitudin sed. Vestibulum condimentum auctor mi nec egestas.");
+
+        StatementMsg msg2 = new StatementMsg();
+        msg2.setId(2);
+        msg2.setTitle("Opóźnienie");
+        msg2.setDateTime(new Date());
+        msg2.setContent("Cras porttitor felis sed purus lobortis lobortis. Nulla feugiat magna auctor nisi auctor, quis tincidunt leo cursus. Cras ut congue elit. Sed egestas fringilla ornare. Nunc eu efficitur ipsum. Etiam non faucibus elit. Ut tempus ornare posuere. Vivamus cursus erat a aliquam pharetra. Fusce feugiat sem at arcu congue, vitae consectetur quam vehicula");
+
+        statementMsgList.add(msg1);
+        statementMsgList.add(msg2);
+
+        mStatementsAdapter.setStatementsData(statementMsgList);
     }
 }
