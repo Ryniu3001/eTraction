@@ -1,6 +1,5 @@
 package pl.poznan.put.etraction;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -16,13 +15,11 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    public static Context appContext;
     private int mCurrentDrawerPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        appContext = this.getApplicationContext();
         setContentView(R.layout.activity_main);
         navigateToHomeFragment();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

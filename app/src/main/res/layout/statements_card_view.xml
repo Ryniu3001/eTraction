@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="4dp"
                 android:textColor="@color/textColorSecondary"
-                android:textSize="10sp"
+                android:textSize="12sp"
                 android:fontFamily="sans-serif-light"
                 tools:text="10.12.2016 15:26"/>
             <TextView

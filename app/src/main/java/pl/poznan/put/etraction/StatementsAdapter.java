@@ -22,6 +22,7 @@ public class StatementsAdapter extends RecyclerView.Adapter<StatementsAdapter.St
 
     public void setStatementsData(List<StatementMsg> statementsList){
         mStatementsList = statementsList;
+        notifyDataSetChanged();
     }
 
     /**
@@ -51,11 +52,11 @@ public class StatementsAdapter extends RecyclerView.Adapter<StatementsAdapter.St
      */
     @Override
     public void onBindViewHolder(StatementsAdapterViewHolder holder, int position) {
-        StatementMsg statementMsg = mStatementsList.get(position);
-        holder.mTitle.setText(statementMsg.getTitle());
-        String dateTime = DateFormat.getDateTimeInstance().format(statementMsg.getDateTime());
+        StatementMsg statementsMsg = mStatementsList.get(position);
+        holder.mTitle.setText(statementsMsg.getTitle());
+        String dateTime = DateFormat.getDateTimeInstance().format(statementsMsg.getDateTime());
         holder.mDateTime.setText(dateTime);
-        holder.mContent.setText(statementMsg.getContent());
+        holder.mContent.setText(statementsMsg.getContent());
 
     }
 
@@ -70,9 +71,9 @@ public class StatementsAdapter extends RecyclerView.Adapter<StatementsAdapter.St
      */
     public class StatementsAdapterViewHolder extends RecyclerView.ViewHolder {
 
-        TextView mTitle;
-        TextView mDateTime;
-        TextView mContent;
+        final TextView mTitle;
+        final TextView mDateTime;
+        final TextView mContent;
 
         public StatementsAdapterViewHolder(View itemView) {
             super(itemView);

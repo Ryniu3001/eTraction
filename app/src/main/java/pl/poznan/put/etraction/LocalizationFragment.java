@@ -76,8 +76,8 @@ public class LocalizationFragment extends Fragment implements
 
         mLocationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(5 * 1000)
-                .setFastestInterval(1 * 1000);
+                .setInterval(5000)
+                .setFastestInterval(1000);
 
         return mMapView;
     }

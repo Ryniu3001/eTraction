@@ -1,15 +1,24 @@
 package pl.poznan.put.etraction.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Date;
 
 /**
- * Created by Marcin on 11.04.2017.
+ * Created by Marcin on 12.04.2017.
  */
 
 public class StatementMsg {
+    @SerializedName("id")
     private int id;
+
+    @SerializedName("title")
     private String title;
+
+    @SerializedName("created_at")
     private Date dateTime;
+
+    @SerializedName("text")
     private String content;
 
     public int getId() {
