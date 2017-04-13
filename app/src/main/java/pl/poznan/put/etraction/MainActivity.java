@@ -16,22 +16,25 @@ import android.view.MenuItem;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private int mCurrentDrawerPosition;
+    private DrawerLayout mDrawer;
+    private NavigationView mNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        navigateToHomeFragment();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView.setNavigationItemSelectedListener(this);
+        navigateToHomeFragment();
+
 
     }
 
@@ -75,24 +78,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
-        mCurrentDrawerPosition = item.getItemId();
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment fragmentClass = null;
-        if (mCurrentDrawerPosition == R.id.nav_localization) {
-            fragmentClass = new LocalizationFragment();
-        } else if (mCurrentDrawerPosition == R.id.nav_statements) {
-            fragmentClass = new StatementsFragment();
-        }
+        if (mCurrentDrawerPosition != item.getItemId()) {
+            mCurrentDrawerPosition = item.getItemId();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            Fragment fragmentClass = null;
+            if (mCurrentDrawerPosition == R.id.nav_localization) {
+                fragmentClass = new LocalizationFragment();
+            } else if (mCurrentDrawerPosition == R.id.nav_statements) {
+                fragmentClass = new StatementsFragment();
+            }
 
-        if (fragmentClass != null)
-            fragmentManager.beginTransaction().replace(R.id.content_frame, fragmentClass).commit();
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+            if (fragmentClass != null)
+                fragmentManager.beginTransaction().replace(R.id.content_frame, fragmentClass).commit();
+        }
+        mDrawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
     private void navigateToHomeFragment(){
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new StatementsFragment()).commit();
         mCurrentDrawerPosition = R.id.nav_statements;
+        mNavigationView.getMenu().getItem(1).setChecked(true);
     }
 }

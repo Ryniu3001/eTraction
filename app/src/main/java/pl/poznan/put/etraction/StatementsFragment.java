@@ -8,11 +8,12 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -38,15 +39,13 @@ public class StatementsFragment extends Fragment implements LoaderManager.Loader
 
     private RecyclerView mRecyclerView;
     private StatementsAdapter mStatementsAdapter;
+    private TextView mErrorView;
+    private ProgressBar mLoadingIndicator;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        URL statementsGetUrl = NetworkUtils.buildUrl();
-        Bundle queryBundle = new Bundle();
-        queryBundle.putString(SEARCH_QUERY_URL_EXTRA, statementsGetUrl.toString());
-        getLoaderManager().initLoader(STATEMENTS_GET_LOADER, queryBundle, this);
+        getLoaderManager().initLoader(STATEMENTS_GET_LOADER, null, this);
     }
 
     @Nullable
@@ -71,7 +70,18 @@ public class StatementsFragment extends Fragment implements LoaderManager.Loader
         mStatementsAdapter = new StatementsAdapter();
         mRecyclerView.setAdapter(mStatementsAdapter);
 
-        //TODO: Progrss bar os sth indicating loading time
+        mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_statement_loading_indicator);
+        mErrorView = (TextView) view.findViewById(R.id.tv_statement_error);
+    }
+
+    private void showErrorMessage() {
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        mErrorView.setVisibility(View.VISIBLE);
+    }
+
+    private void showStatementsDataView() {
+        mErrorView.setVisibility(View.INVISIBLE);
+        mRecyclerView.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -84,14 +94,11 @@ public class StatementsFragment extends Fragment implements LoaderManager.Loader
 
             @Override
             protected void onStartLoading() {
-
-                if (args == null)
-                   return;
-
                 if (mStatementsResponse != null){
                     Log.d(TAG, "DELIVERED STATEMENTS");
                     deliverResult(mStatementsResponse);
                 } else {
+                    mLoadingIndicator.setVisibility(View.VISIBLE);
                     Log.d(TAG, "LOADED STATEMENTS");
                     forceLoad();
                 }
@@ -100,12 +107,8 @@ public class StatementsFragment extends Fragment implements LoaderManager.Loader
             @Override
             public List<StatementMsg> loadInBackground() {
 
-                String statementsQueryUrlString = args.getString(SEARCH_QUERY_URL_EXTRA);
-                if (TextUtils.isEmpty(statementsQueryUrlString))
-                    return null;
-
                 try {
-                    URL statementsUrl = new URL(statementsQueryUrlString);
+                    URL statementsUrl = NetworkUtils.buildUrl();
                     String statementsGetResults = NetworkUtils.getResponseFromHttpUrl(statementsUrl);
                     Gson gson = new Gson();
                     return gson.fromJson(statementsGetResults, StatementsMsg.class).getStatements();
@@ -125,7 +128,13 @@ public class StatementsFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onLoadFinished(Loader<List<StatementMsg>> loader, List<StatementMsg> data) {
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
         mStatementsAdapter.setStatementsData(data);
+        if (null == data){
+            showErrorMessage();
+        } else {
+            showStatementsDataView();
+        }
     }
 
     @Override

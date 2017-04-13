@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -60,6 +61,7 @@ public class LocalizationFragment extends Fragment implements
      * Allows to configure parameters of localization requests and updates
      */
     private LocationRequest mLocationRequest;
+
 
     @Nullable
     @Override
@@ -130,8 +132,10 @@ public class LocalizationFragment extends Fragment implements
 
     @Override
     public void onStop() {
-        stopLocationUpdates();
-        mGoogleApiClient.disconnect();
+        if (mGoogleApiClient.isConnected()) {
+            stopLocationUpdates();
+            mGoogleApiClient.disconnect();
+        }
         super.onStop();
     }
 
@@ -143,7 +147,9 @@ public class LocalizationFragment extends Fragment implements
      * Displays a dialog with error message explaining that the location permission is missing.
      */
     private void showMissingPermissionError() {
-        PermissionUtils.PermissionDeniedDialog.newInstance(true).show(getFragmentManager(), "dialog");
+        Toast.makeText(getActivity(), R.string.permission_required_toast, Toast.LENGTH_LONG).show();
+        getActivity().finish();
+        //PermissionUtils.PermissionDeniedDialog.newInstance(true).show(getFragmentManager(), "dialog"); //causes errors on android 6
     }
 
     /* Location and Google Play Services methods */

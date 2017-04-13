@@ -11,6 +11,8 @@
     <string name="drawer_menu_statements">Komunikaty</string>
 
     <!--    Permissions    -->
-    <string name="location_permission_denied">This app requires location permission to show your location on map. Please try again and grant access to use the location.\nIf the permission has been permanently denied, it can be enabled from the System Settings &gt; Apps &gt; \'eTraction\'.</string>
-    <string name="permission_required_toast">Location permission is required for this app.</string>
+    <string name="location_permission_denied">Aplikacja wymaga pozwolenia na lokalizację aby wskazać położenie urządzenia na mapie. Spróbuj ponownie i zezwól na lokalizację by w pełni korzystać z aplikacji.\nJeśli uprawnienie zostało odebrane na stałe, może zostać przywrócone w ustawieniach systemu (Ustawienia &gt; Aplikacje &gt; eTraction</string>
+    <string name="permission_required_toast">Uprawnienie do lokalizacji urządzenia jest wymagane.</string>
+
+    <string name="statements_error_msg">Wystąpił błąd komunikacji. Proszę spróbować później.</string>
 </resources>
