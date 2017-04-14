@@ -35,7 +35,6 @@ public class StatementsFragment extends Fragment implements LoaderManager.Loader
     private static final String TAG = StatementsFragment.class.getSimpleName();
     //id of loader
     private static final int STATEMENTS_GET_LOADER = 69;
-    private static final String SEARCH_QUERY_URL_EXTRA = "query";
 
     private RecyclerView mRecyclerView;
     private StatementsAdapter mStatementsAdapter;
@@ -62,9 +61,6 @@ public class StatementsFragment extends Fragment implements LoaderManager.Loader
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_statements);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
-        /*
-        Ustawienie na true moze polepszyc wydajnosc. Warto zastanowic sie nad ograniczeniem liczby znakow komunikatu i ustawić flagę na true.
-         */
         mRecyclerView.setHasFixedSize(false);
 
         mStatementsAdapter = new StatementsAdapter();

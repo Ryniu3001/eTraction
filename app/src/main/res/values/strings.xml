@@ -9,10 +9,15 @@
     <!--Drawer-->
     <string name="drawer_menu_localization">Lokalizacja</string>
     <string name="drawer_menu_statements">Komunikaty</string>
+    <string name="drawer_menu_movies">Filmy</string>
 
     <!--    Permissions    -->
     <string name="location_permission_denied">Aplikacja wymaga pozwolenia na lokalizację aby wskazać położenie urządzenia na mapie. Spróbuj ponownie i zezwól na lokalizację by w pełni korzystać z aplikacji.\nJeśli uprawnienie zostało odebrane na stałe, może zostać przywrócone w ustawieniach systemu (Ustawienia &gt; Aplikacje &gt; eTraction</string>
     <string name="permission_required_toast">Uprawnienie do lokalizacji urządzenia jest wymagane.</string>
 
+    <!-- Errors -->
     <string name="statements_error_msg">Wystąpił błąd komunikacji. Proszę spróbować później.</string>
+    
+    <string name="movie_hour">godz.</string>
+    <string name="movie_min">min.</string>
 </resources>

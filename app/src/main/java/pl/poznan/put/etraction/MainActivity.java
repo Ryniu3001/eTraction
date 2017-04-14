@@ -33,8 +33,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
-        navigateToHomeFragment();
-
+        if (savedInstanceState == null)
+            navigateToHomeFragment();
 
     }
 
@@ -82,14 +82,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mCurrentDrawerPosition = item.getItemId();
             FragmentManager fragmentManager = getSupportFragmentManager();
             Fragment fragmentClass = null;
-            if (mCurrentDrawerPosition == R.id.nav_localization) {
-                fragmentClass = new LocalizationFragment();
-            } else if (mCurrentDrawerPosition == R.id.nav_statements) {
-                fragmentClass = new StatementsFragment();
+            switch (mCurrentDrawerPosition) {
+                case R.id.nav_localization:
+                    fragmentClass = new LocalizationFragment();
+                    break;
+                case R.id.nav_statements:
+                    fragmentClass = new StatementsFragment();
+                    break;
+                case R.id.nav_movies:
+                    fragmentClass = new MoviesFragment();
+                    break;
+                default:
+                    fragmentClass = new StatementsFragment();
+                    break;
             }
 
-            if (fragmentClass != null)
-                fragmentManager.beginTransaction().replace(R.id.content_frame, fragmentClass).commit();
+            fragmentManager.beginTransaction().replace(R.id.content_frame, fragmentClass).commit();
         }
         mDrawer.closeDrawer(GravityCompat.START);
         return true;

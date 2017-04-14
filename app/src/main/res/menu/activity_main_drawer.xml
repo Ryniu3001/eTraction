@@ -11,9 +11,9 @@
             android:icon="@drawable/ic_menu_statement"
             android:title="@string/drawer_menu_statements" />
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:id="@+id/nav_movies"
+            android:icon="@drawable/ic_menu_movies"
+            android:title="@string/drawer_menu_movies" />
         <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
