@@ -2,6 +2,7 @@ package pl.poznan.put.etraction;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,11 @@ import pl.poznan.put.etraction.model.MovieMsg;
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdapterViewHolder>{
 
     private List<MovieMsg> mMoviesList;
+    private PlayVideoListener playVideoListener;
+
+    public MoviesAdapter(PlayVideoListener listener){
+        playVideoListener = listener;
+    }
 
     public void setMoviesData(List<MovieMsg> moviesList){
         mMoviesList = moviesList;
@@ -45,7 +51,10 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
         holder.mDuration.setText(createDurationString(movieMsg.getLength(), holder.mDuration.getResources()));
         Picasso.with(holder.mPoster.getContext())
                 .load(movieMsg.getPosterUrl())
+                .placeholder(R.drawable.poster_loading)
+                .error(R.drawable.poster_error)
                 .into(holder.mPoster);
+        holder.uri = movieMsg.getFilename();
     }
 
     @Override
@@ -64,12 +73,19 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
         return sb.toString();
     }
 
+
+    public interface PlayVideoListener {
+
+        void playMedia(Uri file);
+    }
+
     public class MoviesAdapterViewHolder extends RecyclerView.ViewHolder {
 
         final TextView mTitle;
         final TextView mDuration;
         final TextView mGenre;
         final ImageView mPoster;
+        String uri;
 
         public MoviesAdapterViewHolder(final View itemView) {
             super(itemView);
@@ -77,6 +93,15 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
             mDuration = (TextView) itemView.findViewById(R.id.tv_movie_duration);
             mGenre = (TextView) itemView.findViewById(R.id.tv_movie_genre);
             mPoster = (ImageView) itemView.findViewById(R.id.iv_movie_poster);
+
+            itemView.setOnClickListener(listener);
         }
+
+        private View.OnClickListener listener = new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                playVideoListener.playMedia(Uri.parse(uri));
+            }
+        };
     }
 }

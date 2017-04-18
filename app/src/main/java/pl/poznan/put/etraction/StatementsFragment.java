@@ -42,8 +42,8 @@ public class StatementsFragment extends Fragment implements LoaderManager.Loader
     private ProgressBar mLoadingIndicator;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(STATEMENTS_GET_LOADER, null, this);
     }
 
@@ -85,7 +85,6 @@ public class StatementsFragment extends Fragment implements LoaderManager.Loader
         return new AsyncTaskLoader<List<StatementMsg>>(this.getContext()) {
 
             //Cache the previous result (useful when user press home button and then came back to application or when rotate the screen)
-            //TODO: aplikacja nie cachuje odpowiedzi po pierwszej rotacji ekranu... Przy następnych już tak
             List<StatementMsg> mStatementsResponse;
 
             @Override
@@ -104,7 +103,7 @@ public class StatementsFragment extends Fragment implements LoaderManager.Loader
             public List<StatementMsg> loadInBackground() {
 
                 try {
-                    URL statementsUrl = NetworkUtils.buildUrl();
+                    URL statementsUrl = NetworkUtils.buildUrl(NetworkUtils.STATEMENTS_BASE_URL);
                     String statementsGetResults = NetworkUtils.getResponseFromHttpUrl(statementsUrl);
                     Gson gson = new Gson();
                     return gson.fromJson(statementsGetResults, StatementsMsg.class).getStatements();

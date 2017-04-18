@@ -17,6 +17,7 @@
 
     <!-- Errors -->
     <string name="statements_error_msg">Wystąpił błąd komunikacji. Proszę spróbować później.</string>
+    <string name="cant_resolve_intent">Brak programu do obsługi wideo.</string>
     
     <string name="movie_hour">godz.</string>
     <string name="movie_min">min.</string>

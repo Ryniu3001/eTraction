@@ -17,14 +17,15 @@ import java.util.Scanner;
 public class NetworkUtils {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
-    final static String STATEMENTS_BASE_URL = "https://etraction.herokuapp.com/api/v1/statements";
+    public final static String STATEMENTS_BASE_URL = "https://etraction.herokuapp.com/api/v1/statements";
+    public final static String MOVIES_BASE_URL = "https://etraction.herokuapp.com/api/v1/movies";
 
     /**
      * Build the URL used to query.
      * @return URL to use to query
      */
-    public static URL buildUrl(){
-        Uri builtUri = Uri.parse(STATEMENTS_BASE_URL).buildUpon().build();
+    public static URL buildUrl(String baseUrl){         //Poki mamy URLe bez zadnych paramerow, mozna je bydowac jedną metoda
+        Uri builtUri = Uri.parse(baseUrl).buildUpon().build();
         URL url = null;
         try {
             url = new URL(builtUri.toString());
