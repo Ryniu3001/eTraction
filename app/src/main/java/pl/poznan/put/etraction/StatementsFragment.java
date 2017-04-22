@@ -75,7 +75,7 @@ public class StatementsFragment extends Fragment implements LoaderManager.Loader
         mErrorView.setVisibility(View.VISIBLE);
     }
 
-    private void showStatementsDataView() {
+    private void showDataView() {
         mErrorView.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
     }
@@ -128,12 +128,11 @@ public class StatementsFragment extends Fragment implements LoaderManager.Loader
         if (null == data){
             showErrorMessage();
         } else {
-            showStatementsDataView();
+            showDataView();
         }
     }
 
     @Override
     public void onLoaderReset(Loader<List<StatementMsg>> loader) {
-
     }
 }

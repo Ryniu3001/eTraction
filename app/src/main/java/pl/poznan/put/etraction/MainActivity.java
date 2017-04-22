@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (mCurrentDrawerPosition != item.getItemId()) {
             mCurrentDrawerPosition = item.getItemId();
             FragmentManager fragmentManager = getSupportFragmentManager();
-            Fragment fragmentClass = null;
+            Fragment fragmentClass;
             switch (mCurrentDrawerPosition) {
                 case R.id.nav_localization:
                     fragmentClass = new LocalizationFragment();
@@ -91,6 +91,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     break;
                 case R.id.nav_movies:
                     fragmentClass = new MoviesFragment();
+                    break;
+                case R.id.nav_cameras:
+                    fragmentClass = new CamerasFragment();
                     break;
                 default:
                     fragmentClass = new StatementsFragment();

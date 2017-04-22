@@ -23,9 +23,9 @@ import pl.poznan.put.etraction.model.MovieMsg;
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdapterViewHolder>{
 
     private List<MovieMsg> mMoviesList;
-    private PlayVideoListener playVideoListener;
+    private PlayMediaListener playVideoListener;
 
-    public MoviesAdapter(PlayVideoListener listener){
+    public MoviesAdapter(PlayMediaListener listener){
         playVideoListener = listener;
     }
 
@@ -71,12 +71,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdap
             sb.append(hours).append(" ").append(resources.getString(R.string.movie_hour)).append(" ");
          sb.append(minutes).append(" ").append(resources.getString(R.string.movie_min));
         return sb.toString();
-    }
-
-
-    public interface PlayVideoListener {
-
-        void playMedia(Uri file);
     }
 
     public class MoviesAdapterViewHolder extends RecyclerView.ViewHolder {

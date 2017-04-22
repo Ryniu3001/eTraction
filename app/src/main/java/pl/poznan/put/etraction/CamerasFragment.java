@@ -28,40 +28,40 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-import pl.poznan.put.etraction.model.MovieMsg;
+import pl.poznan.put.etraction.model.CameraMsg;
 import pl.poznan.put.etraction.utilities.NetworkUtils;
 
 /**
- * Created by Marcin on 14.04.2017.
+ * Created by Marcin on 19.04.2017.
  */
 
-public class MoviesFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<MovieMsg>>, PlayMediaListener {
+public class CamerasFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<CameraMsg>>, PlayMediaListener {
 
-    private static final String TAG = MoviesFragment.class.getSimpleName();
+    private static final String TAG = CamerasFragment.class.getSimpleName();
     //id of loader
-    private static final int MOVIES_GET_LOADER = 21;
+    private static final int CAMERAS_GET_LOADER = 42;
 
     private RecyclerView mRecyclerView;
-    private MoviesAdapter mMoviesAdapter;
+    private CamerasAdapter mCamerasAdapter;
     private TextView mErrorView;
     private ProgressBar mLoadingIndicator;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(MOVIES_GET_LOADER, null, this);
+        getLoaderManager().initLoader(CAMERAS_GET_LOADER, null, this);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.movies, container, false);
+        return inflater.inflate(R.layout.cameras, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_movies);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_cameras);
         LinearLayoutManager layoutManager;
         switch(Resources.getSystem().getConfiguration().orientation){
             case Configuration.ORIENTATION_PORTRAIT:
@@ -75,11 +75,11 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        mMoviesAdapter = new MoviesAdapter(this);
-        mRecyclerView.setAdapter(mMoviesAdapter);
+        mCamerasAdapter = new CamerasAdapter(this);
+        mRecyclerView.setAdapter(mCamerasAdapter);
 
-        mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_movies_loading_indicator);
-        mErrorView = (TextView) view.findViewById(R.id.tv_movies_error);
+        mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_cameras_loading_indicator);
+        mErrorView = (TextView) view.findViewById(R.id.tv_cameras_error);
     }
 
     private void showErrorMessage() {
@@ -93,47 +93,59 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
     @Override
-    public Loader<List<MovieMsg>> onCreateLoader(int id, Bundle args) {
-        return new AsyncTaskLoader<List<MovieMsg>>(this.getContext()) {
+    public void playMedia(Uri file) {
+        Intent intent = new Intent(Intent.ACTION_VIEW );
+        intent.setDataAndType(file, "video/*");
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null)
+            startActivity(intent);
+        else
+            Toast.makeText(getContext(), R.string.cant_resolve_intent, Toast.LENGTH_SHORT).show();
 
-            private List<MovieMsg> mMoviesResponse;
+    }
+
+    @Override
+    public Loader<List<CameraMsg>> onCreateLoader(int id, Bundle args) {
+        return new AsyncTaskLoader<List<CameraMsg>>(this.getContext()) {
+
+            private List<CameraMsg> mCamerasResponse;
 
             @Override
             protected void onStartLoading() {
-                if (mMoviesResponse != null){
-                    Log.d(TAG, "DELIVERED MOVIES");
-                    deliverResult(mMoviesResponse);
+                if (mCamerasResponse != null){
+                    Log.d(TAG, "DELIVERED CAMERAS");
+                    deliverResult(mCamerasResponse);
                 } else {
                     mLoadingIndicator.setVisibility(View.VISIBLE);
-                    Log.d(TAG, "LOADED MOVIES");
+                    Log.d(TAG, "LOADED CAMERAS");
                     forceLoad();
                 }
             }
 
             @Override
-            public List<MovieMsg> loadInBackground() {
+            public List<CameraMsg> loadInBackground() {
                 try {
-                    URL camerasUrl = NetworkUtils.buildUrl(NetworkUtils.MOVIES_BASE_URL);
-                    String moviesGetResults = NetworkUtils.getResponseFromHttpUrl(camerasUrl);
-                    return new Gson().fromJson(moviesGetResults, MovieMsg.MoviesMsg.class).getMovies();
+                    URL moviesUrl = NetworkUtils.buildUrl(NetworkUtils.CAMERAS_BASE_URL);
+                    String moviesGetResults = NetworkUtils.getResponseFromHttpUrl(moviesUrl);
+                    Gson gson = new Gson();
+                    return gson.fromJson(moviesGetResults, CameraMsg.CamerasMsg.class).getCameras();
                 } catch (IOException | JsonSyntaxException e) {
-                    Log.e(TAG, "Can not get movies data!", e);
+                    Log.e(TAG, "Can not get cameras data!", e);
                     return null;
                 }
             }
 
             @Override
-            public void deliverResult(List<MovieMsg> data) {
-                mMoviesResponse = data;
+            public void deliverResult(List<CameraMsg> data) {
+                mCamerasResponse = data;
                 super.deliverResult(data);
             }
         };
     }
 
     @Override
-    public void onLoadFinished(Loader<List<MovieMsg>> loader, List<MovieMsg> data) {
+    public void onLoadFinished(Loader<List<CameraMsg>> loader, List<CameraMsg> data) {
         mLoadingIndicator.setVisibility(View.INVISIBLE);
-        mMoviesAdapter.setMoviesData(data);
+        mCamerasAdapter.setCamerasData(data);
         if (null == data){
             showErrorMessage();
         } else {
@@ -142,18 +154,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     }
 
     @Override
-    public void onLoaderReset(Loader<List<MovieMsg>> loader) {
-        Log.d(TAG, "RESET LOADER");
-    }
-
-    @Override
-    public void playMedia(Uri file) {
-        Intent intent = new Intent(Intent.ACTION_VIEW );
-        intent.setDataAndType(file, "video/*");
-        if (intent.resolveActivity(getActivity().getPackageManager()) != null)
-            startActivity(intent);
-        else
-            Toast.makeText(getContext(), R.string.cant_resolve_intent, Toast.LENGTH_SHORT).show();
+    public void onLoaderReset(Loader<List<CameraMsg>> loader) {
 
     }
 }

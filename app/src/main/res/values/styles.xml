@@ -24,4 +24,24 @@
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
+    <style name="SmallText">
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:textColor">@color/textColorSecondary</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+    </style>
+
+    <style name="MyCardView">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="card_view:cardCornerRadius">6dp</item>
+        <item name="card_view:contentPadding">8dp</item>
+        <item name="card_view:cardElevation">4dp</item>
+        <item name="android:background">@color/colorPrimaryLight</item>
+
+    </style>
+
+
 </resources>

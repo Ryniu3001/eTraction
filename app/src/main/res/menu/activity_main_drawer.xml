@@ -15,21 +15,17 @@
             android:icon="@drawable/ic_menu_movies"
             android:title="@string/drawer_menu_movies" />
         <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:id="@+id/nav_cameras"
+            android:icon="@drawable/ic_menu_cameras"
+            android:title="@string/drawer_menu_cameras" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="@string/drawer_menu_group_community">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:id="@+id/nav_share_movie"
+                android:icon="@drawable/ic_shared_videos"
+                android:title="@string/drawer_menu_shared_videos" />
         </menu>
     </item>
 

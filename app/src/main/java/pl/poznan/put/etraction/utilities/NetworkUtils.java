@@ -19,6 +19,7 @@ public class NetworkUtils {
     private static final String TAG = NetworkUtils.class.getSimpleName();
     public final static String STATEMENTS_BASE_URL = "https://etraction.herokuapp.com/api/v1/statements";
     public final static String MOVIES_BASE_URL = "https://etraction.herokuapp.com/api/v1/movies";
+    public final static String CAMERAS_BASE_URL = "https://etraction.herokuapp.com/api/v1/cameras";
 
     /**
      * Build the URL used to query.
