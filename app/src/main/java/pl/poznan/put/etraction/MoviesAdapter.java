@@ -14,6 +14,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import pl.poznan.put.etraction.listener.IPlayMediaListener;
 import pl.poznan.put.etraction.model.MovieMsg;
 
 /**
@@ -23,9 +24,9 @@ import pl.poznan.put.etraction.model.MovieMsg;
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesAdapterViewHolder>{
 
     private List<MovieMsg> mMoviesList;
-    private PlayMediaListener playVideoListener;
+    private IPlayMediaListener playVideoListener;
 
-    public MoviesAdapter(PlayMediaListener listener){
+    public MoviesAdapter(IPlayMediaListener listener){
         playVideoListener = listener;
     }
 

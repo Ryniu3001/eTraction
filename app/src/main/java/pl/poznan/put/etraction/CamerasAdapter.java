@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import pl.poznan.put.etraction.listener.IPlayMediaListener;
 import pl.poznan.put.etraction.model.CameraMsg;
 
 /**
@@ -20,10 +21,10 @@ public class CamerasAdapter extends RecyclerView.Adapter<CamerasAdapter.CamerasA
 
 
     private List<CameraMsg> mCamerasList;
-    private PlayMediaListener mPlayMediaListener;
+    private IPlayMediaListener mIPlayMediaListener;
 
-    public CamerasAdapter(PlayMediaListener listener) {
-        mPlayMediaListener = listener;
+    public CamerasAdapter(IPlayMediaListener listener) {
+        mIPlayMediaListener = listener;
     }
 
     public void setCamerasData(List<CameraMsg> camerasList){
@@ -67,7 +68,7 @@ public class CamerasAdapter extends RecyclerView.Adapter<CamerasAdapter.CamerasA
         private View.OnClickListener listener = new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                mPlayMediaListener.playMedia(Uri.parse(url));
+                mIPlayMediaListener.playMedia(Uri.parse(url));
             }
         };
     }

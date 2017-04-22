@@ -1,7 +1,9 @@
 package pl.poznan.put.etraction;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -25,15 +28,15 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-import pl.poznan.put.etraction.listener.PlayMediaListener;
+import pl.poznan.put.etraction.listener.IPlayMediaListener;
 import pl.poznan.put.etraction.model.MovieMsg;
 import pl.poznan.put.etraction.utilities.NetworkUtils;
 
 /**
- * Created by Marcin on 14.04.2017.
+ * Created by Marcin on 22.04.2017.
  */
 
-public class MoviesFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<MovieMsg>> {
+public class RestaurantMenuFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<MovieMsg>>, IPlayMediaListener {
 
     private static final String TAG = MoviesFragment.class.getSimpleName();
     //id of loader
@@ -73,7 +76,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        mMoviesAdapter = new MoviesAdapter(new PlayMediaListener(this.getActivity()));
+        mMoviesAdapter = new MoviesAdapter(this);
         mRecyclerView.setAdapter(mMoviesAdapter);
 
         mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_movies_loading_indicator);
@@ -144,4 +147,14 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         Log.d(TAG, "RESET LOADER");
     }
 
+    @Override
+    public void playMedia(Uri file) {
+        Intent intent = new Intent(Intent.ACTION_VIEW );
+        intent.setDataAndType(file, "video/*");
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null)
+            startActivity(intent);
+        else
+            Toast.makeText(getContext(), R.string.cant_resolve_intent, Toast.LENGTH_SHORT).show();
+
+    }
 }

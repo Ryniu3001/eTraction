@@ -1,9 +1,7 @@
 package pl.poznan.put.etraction;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -28,6 +25,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
+import pl.poznan.put.etraction.listener.PlayMediaListener;
 import pl.poznan.put.etraction.model.CameraMsg;
 import pl.poznan.put.etraction.utilities.NetworkUtils;
 
@@ -35,7 +33,7 @@ import pl.poznan.put.etraction.utilities.NetworkUtils;
  * Created by Marcin on 19.04.2017.
  */
 
-public class CamerasFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<CameraMsg>>, PlayMediaListener {
+public class CamerasFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<CameraMsg>> {
 
     private static final String TAG = CamerasFragment.class.getSimpleName();
     //id of loader
@@ -75,7 +73,7 @@ public class CamerasFragment extends Fragment implements LoaderManager.LoaderCal
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        mCamerasAdapter = new CamerasAdapter(this);
+        mCamerasAdapter = new CamerasAdapter(new PlayMediaListener(this.getActivity()));
         mRecyclerView.setAdapter(mCamerasAdapter);
 
         mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_cameras_loading_indicator);
@@ -92,16 +90,6 @@ public class CamerasFragment extends Fragment implements LoaderManager.LoaderCal
         mRecyclerView.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void playMedia(Uri file) {
-        Intent intent = new Intent(Intent.ACTION_VIEW );
-        intent.setDataAndType(file, "video/*");
-        if (intent.resolveActivity(getActivity().getPackageManager()) != null)
-            startActivity(intent);
-        else
-            Toast.makeText(getContext(), R.string.cant_resolve_intent, Toast.LENGTH_SHORT).show();
-
-    }
 
     @Override
     public Loader<List<CameraMsg>> onCreateLoader(int id, Bundle args) {
