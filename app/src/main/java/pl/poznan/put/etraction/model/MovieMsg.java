@@ -8,10 +8,8 @@ import java.util.List;
  * Created by Marcin on 14.04.2017.
  */
 
-public class MovieMsg {
+public class MovieMsg extends BaseMsg {
 
-    @SerializedName("id")
-    private int id;
     @SerializedName("title")
     private String title;
     @SerializedName("genre")
@@ -22,14 +20,6 @@ public class MovieMsg {
     private String posterUrl;
     @SerializedName("filename")
     private String filename;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getTitle() {
         return title;

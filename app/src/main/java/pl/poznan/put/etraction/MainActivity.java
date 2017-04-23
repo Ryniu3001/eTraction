@@ -15,6 +15,8 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    //TODO: Refactor duplicated code in fragments
+
     private int mCurrentDrawerPosition;
     private DrawerLayout mDrawer;
     private NavigationView mNavigationView;
@@ -94,6 +96,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     break;
                 case R.id.nav_cameras:
                     fragmentClass = new CamerasFragment();
+                    break;
+                case R.id.nav_restaurant_menu:
+                    fragmentClass = new RestaurantMenuFragment();
                     break;
                 default:
                     fragmentClass = new StatementsFragment();

@@ -4,7 +4,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -33,15 +32,13 @@ import pl.poznan.put.etraction.utilities.NetworkUtils;
  * Created by Marcin on 19.04.2017.
  */
 
-public class CamerasFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<CameraMsg>> {
+public class CamerasFragment extends BaseRecyclerViewFragment implements LoaderManager.LoaderCallbacks<List<CameraMsg>> {
 
     private static final String TAG = CamerasFragment.class.getSimpleName();
     //id of loader
     private static final int CAMERAS_GET_LOADER = 42;
 
-    private RecyclerView mRecyclerView;
     private CamerasAdapter mCamerasAdapter;
-    private TextView mErrorView;
     private ProgressBar mLoadingIndicator;
 
     @Override
@@ -78,16 +75,6 @@ public class CamerasFragment extends Fragment implements LoaderManager.LoaderCal
 
         mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_cameras_loading_indicator);
         mErrorView = (TextView) view.findViewById(R.id.tv_cameras_error);
-    }
-
-    private void showErrorMessage() {
-        mRecyclerView.setVisibility(View.INVISIBLE);
-        mErrorView.setVisibility(View.VISIBLE);
-    }
-
-    private void showDataView() {
-        mErrorView.setVisibility(View.INVISIBLE);
-        mRecyclerView.setVisibility(View.VISIBLE);
     }
 
 

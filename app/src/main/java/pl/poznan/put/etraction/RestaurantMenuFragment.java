@@ -1,12 +1,9 @@
 package pl.poznan.put.etraction;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -19,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -28,29 +24,26 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-import pl.poznan.put.etraction.listener.IPlayMediaListener;
-import pl.poznan.put.etraction.model.MovieMsg;
+import pl.poznan.put.etraction.model.RestaurantMenuItemMsg;
 import pl.poznan.put.etraction.utilities.NetworkUtils;
 
 /**
  * Created by Marcin on 22.04.2017.
  */
 
-public class RestaurantMenuFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<MovieMsg>>, IPlayMediaListener {
+public class RestaurantMenuFragment extends BaseRecyclerViewFragment implements LoaderManager.LoaderCallbacks<List<RestaurantMenuItemMsg>> {
 
     private static final String TAG = MoviesFragment.class.getSimpleName();
     //id of loader
-    private static final int MOVIES_GET_LOADER = 21;
+    private static final int RESTAURANT_GET_LOADER = 666;
 
-    private RecyclerView mRecyclerView;
-    private MoviesAdapter mMoviesAdapter;
-    private TextView mErrorView;
+    private RestaurantMenuAdapter mRestaurantMenuAdapter;
     private ProgressBar mLoadingIndicator;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(MOVIES_GET_LOADER, null, this);
+        getLoaderManager().initLoader(RESTAURANT_GET_LOADER, null, this);
     }
 
     @Nullable
@@ -76,47 +69,37 @@ public class RestaurantMenuFragment extends Fragment implements LoaderManager.Lo
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        mMoviesAdapter = new MoviesAdapter(this);
-        mRecyclerView.setAdapter(mMoviesAdapter);
+        mRestaurantMenuAdapter = new RestaurantMenuAdapter();
+        mRecyclerView.setAdapter(mRestaurantMenuAdapter);
 
         mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_movies_loading_indicator);
         mErrorView = (TextView) view.findViewById(R.id.tv_movies_error);
     }
 
-    private void showErrorMessage() {
-        mRecyclerView.setVisibility(View.INVISIBLE);
-        mErrorView.setVisibility(View.VISIBLE);
-    }
-
-    private void showDataView() {
-        mErrorView.setVisibility(View.INVISIBLE);
-        mRecyclerView.setVisibility(View.VISIBLE);
-    }
-
     @Override
-    public Loader<List<MovieMsg>> onCreateLoader(int id, Bundle args) {
-        return new AsyncTaskLoader<List<MovieMsg>>(this.getContext()) {
+    public Loader<List<RestaurantMenuItemMsg>> onCreateLoader(int id, Bundle args) {
+        return new AsyncTaskLoader<List<RestaurantMenuItemMsg>>(this.getContext()) {
 
-            private List<MovieMsg> mMoviesResponse;
+            private List<RestaurantMenuItemMsg> mRestaurantResult;
 
             @Override
             protected void onStartLoading() {
-                if (mMoviesResponse != null){
-                    Log.d(TAG, "DELIVERED MOVIES");
-                    deliverResult(mMoviesResponse);
+                if (mRestaurantResult != null){
+                    Log.d(TAG, "DELIVERED MENU");
+                    deliverResult(mRestaurantResult);
                 } else {
                     mLoadingIndicator.setVisibility(View.VISIBLE);
-                    Log.d(TAG, "LOADED MOVIES");
+                    Log.d(TAG, "LOADED MENU");
                     forceLoad();
                 }
             }
 
             @Override
-            public List<MovieMsg> loadInBackground() {
+            public List<RestaurantMenuItemMsg> loadInBackground() {
                 try {
-                    URL camerasUrl = NetworkUtils.buildUrl(NetworkUtils.MOVIES_BASE_URL);
+                    URL camerasUrl = NetworkUtils.buildUrl(NetworkUtils.RESTAURANT_MENU_BASE_URL);
                     String moviesGetResults = NetworkUtils.getResponseFromHttpUrl(camerasUrl);
-                    return new Gson().fromJson(moviesGetResults, MovieMsg.MoviesMsg.class).getMovies();
+                    return new Gson().fromJson(moviesGetResults, RestaurantMenuItemMsg.RestaurantMenuItemsMsg.class).getItems();
                 } catch (IOException | JsonSyntaxException e) {
                     Log.e(TAG, "Can not get movies data!", e);
                     return null;
@@ -124,17 +107,17 @@ public class RestaurantMenuFragment extends Fragment implements LoaderManager.Lo
             }
 
             @Override
-            public void deliverResult(List<MovieMsg> data) {
-                mMoviesResponse = data;
+            public void deliverResult(List<RestaurantMenuItemMsg> data) {
+                mRestaurantResult = data;
                 super.deliverResult(data);
             }
         };
     }
 
     @Override
-    public void onLoadFinished(Loader<List<MovieMsg>> loader, List<MovieMsg> data) {
+    public void onLoadFinished(Loader<List<RestaurantMenuItemMsg>> loader, List<RestaurantMenuItemMsg> data) {
         mLoadingIndicator.setVisibility(View.INVISIBLE);
-        mMoviesAdapter.setMoviesData(data);
+        mRestaurantMenuAdapter.setMenuData(data);
         if (null == data){
             showErrorMessage();
         } else {
@@ -143,18 +126,8 @@ public class RestaurantMenuFragment extends Fragment implements LoaderManager.Lo
     }
 
     @Override
-    public void onLoaderReset(Loader<List<MovieMsg>> loader) {
+    public void onLoaderReset(Loader<List<RestaurantMenuItemMsg>> loader) {
         Log.d(TAG, "RESET LOADER");
     }
 
-    @Override
-    public void playMedia(Uri file) {
-        Intent intent = new Intent(Intent.ACTION_VIEW );
-        intent.setDataAndType(file, "video/*");
-        if (intent.resolveActivity(getActivity().getPackageManager()) != null)
-            startActivity(intent);
-        else
-            Toast.makeText(getContext(), R.string.cant_resolve_intent, Toast.LENGTH_SHORT).show();
-
-    }
 }

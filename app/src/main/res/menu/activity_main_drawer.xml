@@ -18,6 +18,11 @@
             android:id="@+id/nav_cameras"
             android:icon="@drawable/ic_menu_cameras"
             android:title="@string/drawer_menu_cameras" />
+
+        <item
+            android:id="@+id/nav_restaurant_menu"
+            android:icon="@drawable/ic_restaurant_menu"
+            android:title="@string/drawer_menu_restaurant_menu" />
     </group>
 
     <item android:title="@string/drawer_menu_group_community">

@@ -13,6 +13,7 @@
     <string name="drawer_menu_cameras">Kamery</string>
     <string name="drawer_menu_group_community">Społeczność</string>
     <string name="drawer_menu_shared_videos">Udostępnione nagrania</string>
+    <string name="drawer_menu_restaurant_menu">Menu</string>
 
     <!--    Permissions    -->
     <string name="location_permission_denied">Aplikacja wymaga pozwolenia na lokalizację aby wskazać położenie urządzenia na mapie. Spróbuj ponownie i zezwól na lokalizację by w pełni korzystać z aplikacji.\nJeśli uprawnienie zostało odebrane na stałe, może zostać przywrócone w ustawieniach systemu (Ustawienia &gt; Aplikacje &gt; eTraction</string>

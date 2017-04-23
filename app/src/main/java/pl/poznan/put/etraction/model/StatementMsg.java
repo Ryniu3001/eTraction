@@ -8,9 +8,8 @@ import java.util.Date;
  * Created by Marcin on 12.04.2017.
  */
 
-public class StatementMsg {
-    @SerializedName("id")
-    private int id;
+public class StatementMsg extends BaseMsg{
+
 
     @SerializedName("title")
     private String title;
@@ -20,14 +19,6 @@ public class StatementMsg {
 
     @SerializedName("text")
     private String content;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getTitle() {
         return title;

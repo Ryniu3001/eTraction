@@ -2,7 +2,6 @@ package pl.poznan.put.etraction;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -30,15 +29,13 @@ import pl.poznan.put.etraction.utilities.NetworkUtils;
  * Created by Marcin on 11.04.2017.
  */
 
-public class StatementsFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<StatementMsg>>{
+public class StatementsFragment extends BaseRecyclerViewFragment implements LoaderManager.LoaderCallbacks<List<StatementMsg>>{
 
     private static final String TAG = StatementsFragment.class.getSimpleName();
     //id of loader
     private static final int STATEMENTS_GET_LOADER = 69;
 
-    private RecyclerView mRecyclerView;
     private StatementsAdapter mStatementsAdapter;
-    private TextView mErrorView;
     private ProgressBar mLoadingIndicator;
 
     @Override
@@ -68,16 +65,6 @@ public class StatementsFragment extends Fragment implements LoaderManager.Loader
 
         mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_statement_loading_indicator);
         mErrorView = (TextView) view.findViewById(R.id.tv_statement_error);
-    }
-
-    private void showErrorMessage() {
-        mRecyclerView.setVisibility(View.INVISIBLE);
-        mErrorView.setVisibility(View.VISIBLE);
-    }
-
-    private void showDataView() {
-        mErrorView.setVisibility(View.INVISIBLE);
-        mRecyclerView.setVisibility(View.VISIBLE);
     }
 
     @Override

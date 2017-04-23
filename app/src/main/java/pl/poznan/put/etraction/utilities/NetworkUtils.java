@@ -20,7 +20,7 @@ public class NetworkUtils {
     public final static String STATEMENTS_BASE_URL = "https://etraction.herokuapp.com/api/v1/statements";
     public final static String MOVIES_BASE_URL = "https://etraction.herokuapp.com/api/v1/movies";
     public final static String CAMERAS_BASE_URL = "https://etraction.herokuapp.com/api/v1/cameras";
-
+    public final static String RESTAURANT_MENU_BASE_URL = "https://etraction.herokuapp.com/api/v1/restaurant_menu_items";
     /**
      * Build the URL used to query.
      * @return URL to use to query

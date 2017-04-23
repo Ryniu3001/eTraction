@@ -8,10 +8,7 @@ import java.util.List;
  * Created by Marcin on 19.04.2017.
  */
 
-public class CameraMsg {
-
-    @SerializedName("id")
-    private int id;
+public class CameraMsg extends BaseMsg {
 
     @SerializedName("name")
     private String name;
@@ -19,14 +16,6 @@ public class CameraMsg {
     @SerializedName("url")
     private String url;
 
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
