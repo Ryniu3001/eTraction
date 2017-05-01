@@ -12,7 +12,7 @@
     <string name="drawer_menu_movies">Filmy</string>
     <string name="drawer_menu_cameras">Kamery</string>
     <string name="drawer_menu_group_community">Społeczność</string>
-    <string name="drawer_menu_shared_videos">Udostępnione nagrania</string>
+    <string name="drawer_menu_chat">Chat</string>
     <string name="drawer_menu_restaurant_menu">Menu</string>
 
     <!--    Permissions    -->

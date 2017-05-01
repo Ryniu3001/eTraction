@@ -100,6 +100,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 case R.id.nav_restaurant_menu:
                     fragmentClass = new RestaurantMenuFragment();
                     break;
+                case R.id.nav_chat:
+                    fragmentClass = new ChatFragment();
+                    break;
                 default:
                     fragmentClass = new StatementsFragment();
                     break;

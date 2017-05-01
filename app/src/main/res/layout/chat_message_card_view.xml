@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_chat_time"
+        style="@style/SmallText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="12sp"
+        tools:text="10.12.2016 15:26"/>
+
+        <LinearLayout
+            android:id="@+id/bubble"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@drawable/bubble_green" >
+
+            <TextView
+                android:id="@+id/tv_chat_author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/Title"
+                android:textSize="16sp"
+                tools:text="Jakiś przykładowy tytuł"/>
+
+            <TextView
+                android:id="@+id/tv_chat_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/textColorPrimary"
+                android:fontFamily="sans-serif"
+                tools:text="At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum"/>
+
+        </LinearLayout>
+
+</LinearLayout>
+
+

@@ -28,9 +28,9 @@
     <item android:title="@string/drawer_menu_group_community">
         <menu>
             <item
-                android:id="@+id/nav_share_movie"
-                android:icon="@drawable/ic_shared_videos"
-                android:title="@string/drawer_menu_shared_videos" />
+                android:id="@+id/nav_chat"
+                android:icon="@drawable/ic_menu_chat"
+                android:title="@string/drawer_menu_chat" />
         </menu>
     </item>
 
