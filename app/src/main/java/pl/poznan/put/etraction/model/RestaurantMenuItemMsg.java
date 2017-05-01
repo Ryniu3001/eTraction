@@ -19,6 +19,9 @@ public class RestaurantMenuItemMsg extends BaseMsg {
     @SerializedName("image")
     private String imageUrl;
 
+    @SerializedName("weight")
+    private String weight;
+
 
     public String getName() {
         return name;
@@ -42,6 +45,14 @@ public class RestaurantMenuItemMsg extends BaseMsg {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getWeight() {
+        return weight;
+    }
+
+    public void setWeight(String weight) {
+        this.weight = weight;
     }
 
     public static class RestaurantMenuItemsMsg {

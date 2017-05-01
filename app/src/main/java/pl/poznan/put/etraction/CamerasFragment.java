@@ -50,13 +50,13 @@ public class CamerasFragment extends BaseRecyclerViewFragment implements LoaderM
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.cameras, container, false);
+        return inflater.inflate(R.layout.common_rv_layout, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_cameras);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_common);
         LinearLayoutManager layoutManager;
         switch(Resources.getSystem().getConfiguration().orientation){
             case Configuration.ORIENTATION_PORTRAIT:
@@ -73,8 +73,8 @@ public class CamerasFragment extends BaseRecyclerViewFragment implements LoaderM
         mCamerasAdapter = new CamerasAdapter(new PlayMediaListener(this.getActivity()));
         mRecyclerView.setAdapter(mCamerasAdapter);
 
-        mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_cameras_loading_indicator);
-        mErrorView = (TextView) view.findViewById(R.id.tv_cameras_error);
+        mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_common_loading_indicator);
+        mErrorView = (TextView) view.findViewById(R.id.tv_common_error);
     }
 
 

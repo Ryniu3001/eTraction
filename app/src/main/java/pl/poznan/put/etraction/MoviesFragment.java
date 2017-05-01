@@ -50,13 +50,13 @@ public class MoviesFragment extends BaseRecyclerViewFragment implements LoaderMa
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.movies, container, false);
+        return inflater.inflate(R.layout.common_rv_layout, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_movies);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_common);
         LinearLayoutManager layoutManager;
         switch(Resources.getSystem().getConfiguration().orientation){
             case Configuration.ORIENTATION_PORTRAIT:
@@ -73,8 +73,8 @@ public class MoviesFragment extends BaseRecyclerViewFragment implements LoaderMa
         mMoviesAdapter = new MoviesAdapter(new PlayMediaListener(this.getActivity()));
         mRecyclerView.setAdapter(mMoviesAdapter);
 
-        mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_movies_loading_indicator);
-        mErrorView = (TextView) view.findViewById(R.id.tv_movies_error);
+        mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_common_loading_indicator);
+        mErrorView = (TextView) view.findViewById(R.id.tv_common_error);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class MoviesFragment extends BaseRecyclerViewFragment implements LoaderMa
                     String moviesGetResults = NetworkUtils.getResponseFromHttpUrl(camerasUrl);
                     return new Gson().fromJson(moviesGetResults, MovieMsg.MoviesMsg.class).getMovies();
                 } catch (IOException | JsonSyntaxException e) {
-                    Log.e(TAG, "Can not get movies data!", e);
+                    Log.e(TAG, "Can not get common_rv_layout data!", e);
                     return null;
                 }
             }

@@ -4,13 +4,13 @@
              android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_cameras"
+        android:id="@+id/rv_common"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorPrimaryLight"/>
 
     <TextView
-        android:id="@+id/tv_cameras_error"
+        android:id="@+id/tv_common_error"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/statements_error_msg"
@@ -20,15 +20,10 @@
         android:visibility="invisible"/>
 
     <ProgressBar
-        android:id="@+id/pb_cameras_loading_indicator"
+        android:id="@+id/pb_common_loading_indicator"
         android:layout_width="42dp"
         android:layout_height="42dp"
         android:layout_gravity="center"
         android:visibility="invisible"/>
-
-    <ImageView
-        android:id="@+id/iv_cameras_poster_fullScreen"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
 </FrameLayout>

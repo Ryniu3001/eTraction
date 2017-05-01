@@ -1,9 +1,7 @@
 package pl.poznan.put.etraction;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,31 +33,24 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
 
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.movies_card_view, parent, false);
-        ImageView iv = (ImageView) view.findViewById(R.id.iv_movie_poster);
-        iv.getLayoutParams().width = (int) convertDpToPixel(200.0f, parent.getContext());
+        View view = inflater.inflate(R.layout.restaurant_menu_card_view, parent, false);
         return new RestaurantMenuAdapterViewHolder(view);
     }
 
-    public static float convertDpToPixel(float dp, Context context){
-        Resources resources = context.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        float px = dp * ((float)metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-        return px;
-    }
 
     @Override
     public void onBindViewHolder(RestaurantMenuAdapterViewHolder holder, int position) {
 
         RestaurantMenuItemMsg itemMsg = mMenuItemsList.get(position);
 
-        holder.mTitle.setText(itemMsg.getName());
+        holder.mName.setText(itemMsg.getName());
         holder.mPrice.setText(DecimalFormat.getCurrencyInstance().format(itemMsg.getPrice()));
         Picasso.with(holder.mImage.getContext())
-                .load("http://www.halopizza-luban.pl/wp-content/uploads/2016/02/pizza-1.jpg")
+                .load(itemMsg.getImageUrl())
                 .placeholder(R.drawable.poster_loading)
                 .error(R.drawable.poster_error)
                 .into(holder.mImage);
+        holder.mWeight.setText(itemMsg.getWeight() + " dag");
 
     }
 
@@ -71,15 +62,17 @@ public class RestaurantMenuAdapter extends RecyclerView.Adapter<RestaurantMenuAd
 
     public class RestaurantMenuAdapterViewHolder extends RecyclerView.ViewHolder {
 
-        final TextView mTitle;
+        final TextView mName;
         final TextView mPrice;
         final ImageView mImage;
+        final TextView mWeight;
 
         public RestaurantMenuAdapterViewHolder(final View itemView) {
             super(itemView);
-            mTitle = (TextView) itemView.findViewById(R.id.tv_movie_title);
-            mPrice = (TextView) itemView.findViewById(R.id.tv_movie_duration);
-            mImage = (ImageView) itemView.findViewById(R.id.iv_movie_poster);
+            mName = (TextView) itemView.findViewById(R.id.tv_meal_name);
+            mPrice = (TextView) itemView.findViewById(R.id.tv_meal_price);
+            mImage = (ImageView) itemView.findViewById(R.id.iv_meal_image);
+            mWeight = (TextView) itemView.findViewById(R.id.tv_meal_weight);
         }
     }
 }

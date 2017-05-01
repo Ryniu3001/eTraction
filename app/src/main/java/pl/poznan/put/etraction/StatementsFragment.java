@@ -47,7 +47,7 @@ public class StatementsFragment extends BaseRecyclerViewFragment implements Load
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.statements, container, false);
+        return inflater.inflate(R.layout.common_rv_layout, container, false);
 
 
     }
@@ -55,7 +55,7 @@ public class StatementsFragment extends BaseRecyclerViewFragment implements Load
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_statements);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_common);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(false);
@@ -63,8 +63,8 @@ public class StatementsFragment extends BaseRecyclerViewFragment implements Load
         mStatementsAdapter = new StatementsAdapter();
         mRecyclerView.setAdapter(mStatementsAdapter);
 
-        mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_statement_loading_indicator);
-        mErrorView = (TextView) view.findViewById(R.id.tv_statement_error);
+        mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_common_loading_indicator);
+        mErrorView = (TextView) view.findViewById(R.id.tv_common_error);
     }
 
     @Override
