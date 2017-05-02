@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import pl.poznan.put.etraction.model.ChatMessageMsg;
@@ -36,7 +37,15 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatMessageAda
 
     public void setChatData(List<ChatMessageMsg> chatMessagesList){
         mChatMessagesList = chatMessagesList;
-        notifyDataSetChanged();
+        notifyItemRangeInserted(0, chatMessagesList.size());
+    }
+
+    public void addChatMeesagesData(List<ChatMessageMsg> chatMessagesList){
+        if (mChatMessagesList == null)
+            mChatMessagesList = new ArrayList<>();
+        int position = mChatMessagesList.size();
+        mChatMessagesList.addAll(chatMessagesList);
+        notifyItemRangeInserted(position, chatMessagesList.size());
     }
 
     @Override
@@ -45,7 +54,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatMessageAda
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.chat_message_card_view, parent, false);
-       // RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) view.getLayoutParams();
         return new ChatMessageAdapterViewHolder(view);
     }
 

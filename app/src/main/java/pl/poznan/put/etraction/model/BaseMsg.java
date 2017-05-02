@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 abstract class BaseMsg {
     @SerializedName("id")
-    private int id;
+    protected int id;
 
     public int getId() {
         return id;

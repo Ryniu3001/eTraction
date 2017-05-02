@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -21,6 +22,17 @@ public class NetworkUtils {
     public final static String MOVIES_BASE_URL = "https://etraction.herokuapp.com/api/v1/common_rv_layout";
     public final static String CAMERAS_BASE_URL = "https://etraction.herokuapp.com/api/v1/cameras";
     public final static String RESTAURANT_MENU_BASE_URL = "https://etraction.herokuapp.com/api/v1/restaurant_menu_items";
+    public final static String CHAT_MESSAGES_BASE_URL  = "https://etraction.herokuapp.com/api/v1/messages";
+
+    public final static String CHAT_PAGE_PARAM = "page";
+    public final static String CHAT_MESSAGES_PER_PAGE_PARAM = "per_page";
+
+    public final static String CHAT_MESSAGES_PER_PAGE_VALUE = "7";
+
+    public final static String REQUEST_HEADER_DEVICE_ID_PARAM = "per_page";
+
+
+
     /**
      * Build the URL used to query.
      * @return URL to use to query
@@ -36,6 +48,25 @@ public class NetworkUtils {
 
         return url;
     }
+    //TODO: Refaktor, mozna scalic w jedna metode?
+    public static URL buildUrlWithParams(String baseUrl, Map<String, String> params){
+        Uri.Builder uriBuilder = Uri.parse(baseUrl).buildUpon();
+        if (params != null && !params.isEmpty()){
+            for (Map.Entry<String, String> param : params.entrySet()){
+                uriBuilder.appendQueryParameter(param.getKey(), param.getValue());
+            }
+        }
+        Uri builtUri = uriBuilder.build();
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            Log.e(TAG, "Can't build URL! return null", e);
+        }
+
+        return url;
+    }
+
 
     /**
      * This method returns the entire result from the HTTP response.
@@ -46,6 +77,26 @@ public class NetworkUtils {
      */
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        try {
+            InputStream in = urlConnection.getInputStream();
+
+            Scanner scanner = new Scanner(in);
+            scanner.useDelimiter("\\A");
+
+            boolean hasInput = scanner.hasNext();
+            if (hasInput) {
+                return scanner.next();
+            } else {
+                return null;
+            }
+        } finally {
+            urlConnection.disconnect();
+        }
+    }
+    //TODO: Refaktor, scalic dwie metody
+    public static String getResponseFromHttpUrlWithDeviceId(URL url, String deviceId) throws IOException {
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+       // urlConnection.setRequestProperty();
         try {
             InputStream in = urlConnection.getInputStream();
 

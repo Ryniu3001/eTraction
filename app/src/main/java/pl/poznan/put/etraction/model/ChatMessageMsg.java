@@ -1,5 +1,7 @@
 package pl.poznan.put.etraction.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Date;
 import java.util.List;
 
@@ -8,9 +10,11 @@ import java.util.List;
  */
 
 public class ChatMessageMsg extends BaseMsg {
-
+    @SerializedName("author")
     private String author;
+    @SerializedName("created_at")
     private Date date;
+    @SerializedName("text")
     private String content;
 
     public String getAuthor() {
@@ -38,7 +42,7 @@ public class ChatMessageMsg extends BaseMsg {
     }
 
     public static class ChatMessagesMsg {
-
+        @SerializedName("messages")
         private List<ChatMessageMsg> chatMessages;
 
         public List<ChatMessageMsg> getChatMessages() {

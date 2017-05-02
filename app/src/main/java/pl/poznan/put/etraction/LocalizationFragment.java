@@ -80,7 +80,6 @@ public class LocalizationFragment extends Fragment implements
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(5000)
                 .setFastestInterval(1000);
-
         return mMapView;
     }
 
