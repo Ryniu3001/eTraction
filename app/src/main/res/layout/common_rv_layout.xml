@@ -13,7 +13,7 @@
         android:id="@+id/tv_common_error"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/statements_error_msg"
+        android:text="@string/generic_error_msg"
         android:padding="16dp"
         android:textSize="20sp"
         android:gravity="center"

@@ -1,5 +1,6 @@
 package pl.poznan.put.etraction;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -13,7 +14,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements
+        NavigationView.OnNavigationItemSelectedListener
+        {
 
     //TODO: Refactor duplicated code in fragments
 
@@ -37,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mNavigationView.setNavigationItemSelectedListener(this);
         if (savedInstanceState == null)
             navigateToHomeFragment();
-
     }
 
     @Override
@@ -57,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.main_settings, menu);
         return true;
     }
 
@@ -68,8 +70,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent startSettingsActivity = new Intent(this, SettingsActivity.class);
+            startActivity(startSettingsActivity);
             return true;
         }
 
@@ -118,4 +121,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mCurrentDrawerPosition = R.id.nav_statements;
         mNavigationView.getMenu().getItem(1).setChecked(true);
     }
+
 }
