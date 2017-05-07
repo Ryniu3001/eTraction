@@ -28,7 +28,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Shared
         PreferenceScreen preferenceScreen = getPreferenceScreen();
 
         if (getContext() instanceof SettingsActivity)
-            findPreference(getResources().getString(R.string.pref_nickname_key)).setOnPreferenceClickListener((SettingsActivity)getContext());
+            findPreference(getResources().getString(R.string.pref_nickname_key)).setOnPreferenceChangeListener((SettingsActivity)getContext());
 
         int count = preferenceScreen.getPreferenceCount();
         for (int i = 0; i < count; i++){

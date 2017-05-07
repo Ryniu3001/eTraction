@@ -143,6 +143,7 @@ public class NetworkUtils {
 
             int responseCode = urlConnection.getResponseCode();
             if (responseCode == HTTP_CREATED || responseCode == HTTP_OK){
+                Log.d(TAG, "Successful " + method + ": " + jsonObject.toString());
                 return true;
             } else {
                 Log.d(TAG, "CODE: " + responseCode);

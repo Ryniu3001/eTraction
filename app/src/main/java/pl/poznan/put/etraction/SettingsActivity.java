@@ -23,7 +23,7 @@ import java.net.URL;
 import pl.poznan.put.etraction.model.UserMsg;
 import pl.poznan.put.etraction.utilities.NetworkUtils;
 
-public class SettingsActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceClickListener{
+public class SettingsActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceChangeListener {
 
     private static final String TAG = SettingsActivity.class.getSimpleName();
     ProgressBar mSaveIndicator;
@@ -57,7 +57,7 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
     }
 
     @Override
-    public boolean onPreferenceClick(Preference preference) {
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
         if (preference.getKey().equals(getResources().getString(R.string.pref_nickname_key))){
             mActualNickname = PreferenceManager.getDefaultSharedPreferences(this).getString(preference.getKey(), null);
         }
@@ -82,6 +82,7 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
 
         @Override
         protected Boolean doInBackground(String... params) {
+
             String nickname = params[0];
             UserMsg msg = new UserMsg();
             msg.setUsername(nickname);
