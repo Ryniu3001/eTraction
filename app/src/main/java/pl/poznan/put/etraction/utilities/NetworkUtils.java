@@ -12,6 +12,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -116,6 +117,7 @@ public class NetworkUtils {
 
     @Nullable
     private static String inputStreamToString(InputStream in) {
+        if (in == null) return null;
         Scanner scanner = new Scanner(in);
         scanner.useDelimiter("\\A");
 
@@ -127,36 +129,40 @@ public class NetworkUtils {
         }
     }
 
-    public static boolean saveDataToServer(URL url, String deviceId, String method, JsonObject jsonObject) throws IOException {
-        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+    public static HttpUrlResponse saveDataToServer(URL url, String deviceId, String method, JsonObject jsonObject) {
+        HttpURLConnection urlConnection = null;
+        int responseCode = 0;
         try {
+            urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod(method);
             urlConnection.setRequestProperty(REQUEST_HEADER_DEVICE_ID_PARAM, deviceId);
             urlConnection.setRequestProperty("Content-Type", "application/json");
             urlConnection.setDoOutput(true);
-            urlConnection.setDoInput(false);
+            urlConnection.setDoInput(true);
             urlConnection.setFixedLengthStreamingMode(jsonObject.toString().getBytes().length);
 
             OutputStreamWriter streamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
             streamWriter.write(jsonObject.toString());
             streamWriter.close();
 
-            int responseCode = urlConnection.getResponseCode();
-            if (responseCode == HTTP_CREATED || responseCode == HTTP_OK){
+            responseCode = urlConnection.getResponseCode();
+            if (responseCode == HTTP_CREATED || responseCode == HTTP_OK) {
                 Log.d(TAG, "Successful " + method + ": " + jsonObject.toString());
-                return true;
+                return new HttpUrlResponse(inputStreamToString(urlConnection.getInputStream()), responseCode);
             } else {
                 Log.d(TAG, "CODE: " + responseCode);
                 Log.d(TAG, inputStreamToString(urlConnection.getErrorStream()));
             }
 
-        } catch (Exception e) {
+        } catch (UnknownHostException e) {
+            Log.e(TAG, "error", e);
+        }catch (IOException e) {
             Log.e(TAG, "error", e);
             Log.e(TAG, inputStreamToString(urlConnection.getErrorStream()));
         } finally {
             urlConnection.disconnect();
         }
-        return false;
+        return new HttpUrlResponse(inputStreamToString(urlConnection.getErrorStream()), responseCode);
     }
 
 }

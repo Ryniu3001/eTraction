@@ -97,7 +97,7 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
                 else
                     method = "POST";
 
-                return NetworkUtils.saveDataToServer(userUrl, "dupa2", method, jsonObject);
+                return NetworkUtils.saveDataToServer(userUrl, "dupa2", method, jsonObject).isOk();
 
             } catch (IOException e) {
                 Log.e(TAG, "Exception while invoking service" ,e);

@@ -31,4 +31,5 @@
     <string name="pref_nickname_label">Nazwa użytkownika</string>
 
     <string name="settings_nickname_saving">Zapisywanie danych na serwer...</string>
+    <string name="chat_hint">Wpisz wiadomość...</string>
 </resources>

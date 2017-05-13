@@ -30,9 +30,11 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatMessageAda
 
     private List<ChatMessageMsg> mChatMessagesList;
     private FragmentActivity mFragmentActivity;
+    private String mNickname;
 
-    public ChatAdapter(FragmentActivity fragmentActivity){
+    public ChatAdapter(FragmentActivity fragmentActivity, String nickname){
         mFragmentActivity = fragmentActivity;
+        mNickname = nickname;
     }
 
     public void setChatData(List<ChatMessageMsg> chatMessagesList){
@@ -44,8 +46,17 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatMessageAda
         if (mChatMessagesList == null)
             mChatMessagesList = new ArrayList<>();
         int position = mChatMessagesList.size();
-        mChatMessagesList.addAll(chatMessagesList);
-        notifyItemRangeInserted(position, chatMessagesList.size());
+        if (chatMessagesList != null) {
+            mChatMessagesList.addAll(chatMessagesList);
+            notifyItemRangeInserted(position, chatMessagesList.size());
+        }
+    }
+
+    public void addChatMessage(ChatMessageMsg message){
+        if (mChatMessagesList == null) mChatMessagesList = new ArrayList<>();
+
+        mChatMessagesList.add(message);
+        notifyItemInserted(mChatMessagesList.size() - 1);
     }
 
     @Override
@@ -59,7 +70,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatMessageAda
 
     @Override
     public int getItemViewType(int position) {
-        if (mChatMessagesList.get(position).getAuthor().equals("Janusz"))
+        if (mChatMessagesList.get(position).getAuthor().equals(mNickname))
             return TYPE_ME;
          else
             return TYPE_OTHERS;
@@ -109,6 +120,16 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatMessageAda
             mAuthor = (TextView) itemView.findViewById(R.id.tv_chat_author);
             mDateTime = (TextView) itemView.findViewById(R.id.tv_chat_time);
             mContent = (TextView) itemView.findViewById(R.id.tv_chat_content);
+
+            bubble.setOnClickListener(listener);
         }
+
+        private View.OnClickListener listener = new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mDateTime.setVisibility(mDateTime.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
+            }
+        };
     }
 }

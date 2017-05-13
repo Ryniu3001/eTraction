@@ -1,5 +1,7 @@
 package pl.poznan.put.etraction.model;
 
+import static java.net.HttpURLConnection.HTTP_ACCEPTED;
+import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_OK;
 
 /**
@@ -15,7 +17,10 @@ public class HttpUrlResponse {
     public HttpUrlResponse(String body, int code){
         this.body = body;
         this.responseCode = code;
-        this.isOk = code == HTTP_OK ? true : false;
+        if (code == HTTP_OK || code == HTTP_CREATED || code == HTTP_ACCEPTED)
+            this.isOk = true;
+        else
+            this.isOk = false;
     }
 
     public String getBody() {

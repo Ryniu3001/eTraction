@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent">
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                 android:id="@+id/chat_body"
+                 android:layout_width="0dp"
+                 android:layout_height="0dp"
+                 app:layout_constraintBottom_toTopOf="@+id/et_chat_message_edit"
+                 app:layout_constraintLeft_toLeftOf="parent"
+                 app:layout_constraintRight_toRightOf="parent"
+                 app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_common"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimaryLight"/>
+
+        <TextView
+            android:id="@+id/tv_common_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="@string/generic_error_msg"
+            android:textSize="20sp"
+            android:visibility="invisible"/>
+
+        <ProgressBar
+            android:id="@+id/pb_common_loading_indicator"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_gravity="center"
+            android:visibility="invisible"/>
+
+    </FrameLayout>
+
+
+    <EditText
+        android:id="@+id/et_chat_message_edit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/chat_hint"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:inputType="textAutoCorrect|textCapSentences|textMultiLine"
+        android:maxLength="140"
+        android:maxLines="4"
+        android:background="@color/colorPrimaryLight"
+        android:minHeight="42dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chat_body"
+        app:layout_constraintRight_toLeftOf="@+id/iv_chat_send"
+        />
+
+
+    <ImageButton
+        android:id="@+id/iv_chat_send"
+        android:layout_width="48dp"
+        android:layout_height="0dp"
+        android:src="@drawable/ic__chat_send_black"
+        android:padding="4dp"
+        android:background="@drawable/item_selector"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chat_body"/>
+
+
+
+</android.support.constraint.ConstraintLayout>

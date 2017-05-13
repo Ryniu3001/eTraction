@@ -1,20 +1,28 @@
 package pl.poznan.put.etraction;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.IOException;
@@ -27,6 +35,7 @@ import java.util.Map;
 
 import pl.poznan.put.etraction.listener.EndlessRecyclerViewScrollListener;
 import pl.poznan.put.etraction.model.ChatMessageMsg;
+import pl.poznan.put.etraction.model.HttpUrlResponse;
 import pl.poznan.put.etraction.utilities.NetworkUtils;
 
 /**
@@ -41,6 +50,9 @@ public class ChatFragment extends BaseRecyclerViewFragment implements LoaderMana
 
     private ChatAdapter mChatAdapter;
     private ProgressBar mLoadingIndicator;
+    private ImageButton mSendButton;
+    private EditText mEnteredMessage;
+    private Toast mToast;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -53,7 +65,7 @@ public class ChatFragment extends BaseRecyclerViewFragment implements LoaderMana
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.common_rv_layout, container, false);
+        return inflater.inflate(R.layout.chat_rv_layout, container, false);
     }
 
     @Override
@@ -65,11 +77,14 @@ public class ChatFragment extends BaseRecyclerViewFragment implements LoaderMana
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(false);
 
-        mChatAdapter = new ChatAdapter(this.getActivity());
+        String nickname = PreferenceManager.getDefaultSharedPreferences(this.getContext()).getString(getString(R.string.pref_nickname_key), "");
+        mChatAdapter = new ChatAdapter(this.getActivity(), nickname);
         mRecyclerView.setAdapter(mChatAdapter);
 
         mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_common_loading_indicator);
         mErrorView = (TextView) view.findViewById(R.id.tv_common_error);
+        mSendButton = (ImageButton) view.findViewById(R.id.iv_chat_send);
+        mEnteredMessage = (EditText) view.findViewById(R.id.et_chat_message_edit);
 
         final LoaderManager.LoaderCallbacks callback = this; // May be moved to Listener constructor
         mRecyclerView.addOnScrollListener(new EndlessRecyclerViewScrollListener(layoutManager) {
@@ -79,6 +94,20 @@ public class ChatFragment extends BaseRecyclerViewFragment implements LoaderMana
                 bundle.putInt(NetworkUtils.CHAT_PAGE_PARAM, page);
                 getLoaderManager().restartLoader(CHAT_LOADER, bundle, callback);
 
+            }
+        });
+
+        setMessageSendAction();
+    }
+
+    private void setMessageSendAction() {
+        mSendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String message = mEnteredMessage.getText().toString();
+                if (!message.isEmpty()) {
+                    new SendMessageTask().execute(message);
+                }
             }
         });
     }
@@ -162,5 +191,49 @@ public class ChatFragment extends BaseRecyclerViewFragment implements LoaderMana
     @Override
     public void onLoaderReset(Loader<List<ChatMessageMsg>> loader) {
 
+    }
+
+
+    public class SendMessageTask extends AsyncTask<String, Void, ChatMessageMsg> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mSendButton.setEnabled(false);
+            mEnteredMessage.setText("");
+        }
+
+        @Override
+        protected ChatMessageMsg doInBackground(String... params) {
+            String message = params[0];
+            ChatMessageMsg msg = new ChatMessageMsg();
+            msg.setContent(message);
+            ChatMessageMsg.ChatMessageDTO chatMessageDTO = new ChatMessageMsg.ChatMessageDTO();
+            chatMessageDTO.setMessage(msg);
+            Gson gson = new GsonBuilder().create();
+            String json = gson.toJson(chatMessageDTO);
+            JsonObject jsonObject = (JsonObject) new JsonParser().parse(json);
+            URL userUrl = NetworkUtils.buildUrl(NetworkUtils.CHAT_MESSAGES_BASE_URL);
+
+            HttpUrlResponse response = NetworkUtils.saveDataToServer(userUrl, "dupa2", "POST", jsonObject);
+            if (response.isOk()) {
+                ChatMessageMsg newMeesage = new Gson().fromJson(response.getBody(), ChatMessageMsg.ChatMessageDTO.class).getMessage();
+                return newMeesage;
+            } else
+                return null;
+        }
+
+        @Override
+        protected void onPostExecute(ChatMessageMsg chatMessageMsg) {
+            super.onPostExecute(chatMessageMsg);
+            mSendButton.setEnabled(true);
+            if (chatMessageMsg == null){
+                if (mToast != null) mToast.cancel();
+                mToast = Toast.makeText(getContext(), getString(R.string.generic_error_msg), Toast.LENGTH_SHORT);
+                mToast.show();
+            } else {
+                mChatAdapter.addChatMessage(chatMessageMsg);
+            }
+        }
     }
 }

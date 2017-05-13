@@ -8,7 +8,6 @@ import java.util.List;
 /**
  * Created by Marcin on 01.05.2017.
  */
-
 public class ChatMessageMsg extends BaseMsg {
     @SerializedName("author")
     private String author;
@@ -51,6 +50,19 @@ public class ChatMessageMsg extends BaseMsg {
 
         public void setChatMessages(List<ChatMessageMsg> chatMessages) {
             this.chatMessages = chatMessages;
+        }
+    }
+
+    public static class ChatMessageDTO {
+        @SerializedName("message")
+        private ChatMessageMsg message;
+
+        public ChatMessageMsg getMessage() {
+            return message;
+        }
+
+        public void setMessage(ChatMessageMsg message) {
+            this.message = message;
         }
     }
 }
