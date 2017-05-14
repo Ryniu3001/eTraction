@@ -1,7 +1,12 @@
 package pl.poznan.put.etraction;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -36,6 +41,7 @@ import java.util.Map;
 import pl.poznan.put.etraction.listener.EndlessRecyclerViewScrollListener;
 import pl.poznan.put.etraction.model.ChatMessageMsg;
 import pl.poznan.put.etraction.model.HttpUrlResponse;
+import pl.poznan.put.etraction.service.ChatService;
 import pl.poznan.put.etraction.utilities.NetworkUtils;
 
 /**
@@ -54,12 +60,48 @@ public class ChatFragment extends BaseRecyclerViewFragment implements LoaderMana
     private EditText mEnteredMessage;
     private Toast mToast;
 
+    ChatService mService;
+    boolean mBound = false;
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            ChatService.LocalBinder binder = (ChatService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+            binder.setListener(new ChatService.ChatServiceListener() {
+                @Override
+                public void newMessage(ChatMessageMsg msg) {
+                    Log.d(TAG, "NEW MESSAGE !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                }
+            });
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            Log.i(TAG, "SERVICE DISCONNECTED");
+            mBound = false;
+        }
+    };
+
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Bundle bundle = new Bundle();
         bundle.putInt(NetworkUtils.CHAT_PAGE_PARAM, 1);
         getLoaderManager().initLoader(CHAT_LOADER, bundle, this);
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Intent intent = new Intent(this.getContext(), ChatService.class);
+        getActivity().startService(intent);
+        getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Nullable
@@ -98,6 +140,7 @@ public class ChatFragment extends BaseRecyclerViewFragment implements LoaderMana
         });
 
         setMessageSendAction();
+
     }
 
     private void setMessageSendAction() {
@@ -193,6 +236,17 @@ public class ChatFragment extends BaseRecyclerViewFragment implements LoaderMana
 
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mBound) {
+            getActivity().unbindService(mConnection);
+            mBound = false;
+            Intent intent = new Intent(this.getContext(), ChatService.class);
+            getActivity().stopService(intent);
+            Log.d(TAG, "SERVICE STOPPING?");
+        }
+    }
 
     public class SendMessageTask extends AsyncTask<String, Void, ChatMessageMsg> {
 
