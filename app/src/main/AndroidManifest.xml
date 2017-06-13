@@ -41,7 +41,7 @@
         </activity>
 
         <service
-            android:name=".service.ChatService"
+            android:name=".service.EtractionService"
             android:enabled="true"
             android:exported="false">
         </service>

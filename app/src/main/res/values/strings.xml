@@ -32,4 +32,9 @@
 
     <string name="settings_nickname_saving">Zapisywanie danych na serwer...</string>
     <string name="chat_hint">Wpisz wiadomość...</string>
+
+    <string name="chat_notification_title">ETraction - nowe wiadomości</string>
+    <string name="chat_notification_text">Pojawiły się nowe wiadomości na czacie. Sprawdź!</string>
+    <string name="statements_notification_title">ETraction - komunikat!</string>
+    <string name="statements_notification_text">Nowy komunikat</string>
 </resources>

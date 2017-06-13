@@ -1,12 +1,8 @@
 package pl.poznan.put.etraction;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -26,6 +22,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -41,14 +38,16 @@ import java.util.Map;
 import pl.poznan.put.etraction.listener.EndlessRecyclerViewScrollListener;
 import pl.poznan.put.etraction.model.ChatMessageMsg;
 import pl.poznan.put.etraction.model.HttpUrlResponse;
-import pl.poznan.put.etraction.service.ChatService;
+import pl.poznan.put.etraction.service.EtractionService;
 import pl.poznan.put.etraction.utilities.NetworkUtils;
 
 /**
  * Created by Marcin on 01.05.2017.
  */
 
-public class ChatFragment extends BaseRecyclerViewFragment implements LoaderManager.LoaderCallbacks<List<ChatMessageMsg>>{
+public class ChatFragment extends BaseRecyclerViewFragment implements
+        LoaderManager.LoaderCallbacks<List<ChatMessageMsg>>,
+        EtractionService.EtractionServiceListener{
 
     private static final String TAG = ChatFragment.class.getSimpleName();
     //id of loader
@@ -59,34 +58,6 @@ public class ChatFragment extends BaseRecyclerViewFragment implements LoaderMana
     private ImageButton mSendButton;
     private EditText mEnteredMessage;
     private Toast mToast;
-
-    ChatService mService;
-    boolean mBound = false;
-
-    /** Defines callbacks for service binding, passed to bindService() */
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            ChatService.LocalBinder binder = (ChatService.LocalBinder) service;
-            mService = binder.getService();
-            mBound = true;
-            binder.setListener(new ChatService.ChatServiceListener() {
-                @Override
-                public void newMessage(ChatMessageMsg msg) {
-                    Log.d(TAG, "NEW MESSAGE !!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                }
-            });
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            Log.i(TAG, "SERVICE DISCONNECTED");
-            mBound = false;
-        }
-    };
-
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -99,9 +70,6 @@ public class ChatFragment extends BaseRecyclerViewFragment implements LoaderMana
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = new Intent(this.getContext(), ChatService.class);
-        getActivity().startService(intent);
-        getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Nullable
@@ -233,19 +201,40 @@ public class ChatFragment extends BaseRecyclerViewFragment implements LoaderMana
 
     @Override
     public void onLoaderReset(Loader<List<ChatMessageMsg>> loader) {
-
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        if (mBound) {
-            getActivity().unbindService(mConnection);
-            mBound = false;
-            Intent intent = new Intent(this.getContext(), ChatService.class);
-            getActivity().stopService(intent);
-            Log.d(TAG, "SERVICE STOPPING?");
+    public void newMessage(JsonElement msg) {
+        final ChatMessageMsg chatMessage = new Gson().fromJson(msg, ChatMessageMsg.ChatMessageDTO.class).getMessage();
+        //some notification sound
+        MediaPlayer player = MediaPlayer.create(this.getContext(), R.raw.you_wouldnt_believe);
+        final boolean isScrolledBottom = isLastItemDisplaying(mRecyclerView);
+        player.start();
+        this.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mChatAdapter.addChatMessage(chatMessage);
+                if (isScrolledBottom) {
+                    // Do not scroll the list when user is watching previous messages
+                    mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
+                }
+            }
+        });
+    }
+
+    /**
+     * Check whether the last item in RecyclerView is being displayed or not
+     *
+     * @param recyclerView which you would like to check
+     * @return true if last position was Visible and false Otherwise
+     */
+    private boolean isLastItemDisplaying(RecyclerView recyclerView) {
+        if (recyclerView.getAdapter().getItemCount() != 0) {
+            int lastVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
+            if (lastVisibleItemPosition != RecyclerView.NO_POSITION && lastVisibleItemPosition == recyclerView.getAdapter().getItemCount() - 1)
+                return true;
         }
+        return false;
     }
 
     public class SendMessageTask extends AsyncTask<String, Void, ChatMessageMsg> {

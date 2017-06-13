@@ -1,6 +1,11 @@
 package pl.poznan.put.etraction;
 
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -23,6 +28,7 @@ import java.util.List;
 
 import pl.poznan.put.etraction.model.StatementMsg;
 import pl.poznan.put.etraction.model.StatementsMsg;
+import pl.poznan.put.etraction.service.EtractionService;
 import pl.poznan.put.etraction.utilities.NetworkUtils;
 
 /**
@@ -37,6 +43,36 @@ public class StatementsFragment extends BaseRecyclerViewFragment implements Load
 
     private StatementsAdapter mStatementsAdapter;
     private ProgressBar mLoadingIndicator;
+
+    EtractionService mService;
+    boolean mBound = false;
+
+    /** Defines callbacks for service binding, passed to bindService() */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            EtractionService.LocalBinder binder = (EtractionService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            Log.i(TAG, "SERVICE DISCONNECTED");
+            mBound = false;
+        }
+    };
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Intent intent = new Intent(this.getContext(), EtractionService.class);
+        getActivity().startService(intent);
+        getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -65,6 +101,17 @@ public class StatementsFragment extends BaseRecyclerViewFragment implements Load
 
         mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_common_loading_indicator);
         mErrorView = (TextView) view.findViewById(R.id.tv_common_error);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mBound) {
+            getActivity().unbindService(mConnection);
+            mBound = false;
+//            Intent intent = new Intent(this.getContext(), EtractionService.class);
+//            getActivity().stopService(intent);
+        }
     }
 
     @Override

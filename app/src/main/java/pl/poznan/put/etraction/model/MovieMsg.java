@@ -62,7 +62,7 @@ public class MovieMsg extends BaseMsg {
     }
 
     public static class MoviesMsg{
-        @SerializedName("common_rv_layout")
+        @SerializedName("movies")
         List<MovieMsg> movies;
 
         public List<MovieMsg> getMovies() {

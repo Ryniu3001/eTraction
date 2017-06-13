@@ -53,7 +53,9 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatMessageAda
     }
 
     public void addChatMessage(ChatMessageMsg message){
-        if (mChatMessagesList == null) mChatMessagesList = new ArrayList<>();
+        // Problem with order may occurs? Sort or hide seconds in message time to resolve problem
+        if (mChatMessagesList == null)
+            mChatMessagesList = new ArrayList<>();
 
         mChatMessagesList.add(message);
         notifyItemInserted(mChatMessagesList.size() - 1);

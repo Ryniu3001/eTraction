@@ -1,7 +1,11 @@
 package pl.poznan.put.etraction;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -11,18 +15,42 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import pl.poznan.put.etraction.service.EtractionService;
+
 public class MainActivity extends AppCompatActivity implements
-        NavigationView.OnNavigationItemSelectedListener
-        {
+        NavigationView.OnNavigationItemSelectedListener {
 
-    //TODO: Refactor duplicated code in fragments
-
+    private static final String TAG = MainActivity.class.getSimpleName();
     private int mCurrentDrawerPosition;
     private DrawerLayout mDrawer;
     private NavigationView mNavigationView;
+    EtractionService mService;
+    boolean mBound = false;
+
+    /**
+     * Defines callbacks for service binding, passed to bindService()
+     */
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            EtractionService.LocalBinder binder = (EtractionService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            Log.i(TAG, "SERVICE DISCONNECTED");
+            mBound = false;
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +68,11 @@ public class MainActivity extends AppCompatActivity implements
         mNavigationView.setNavigationItemSelectedListener(this);
         if (savedInstanceState == null)
             navigateToHomeFragment();
+
+        //Service
+        Intent intent = new Intent(this, EtractionService.class);
+        startService(intent);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -111,15 +144,33 @@ public class MainActivity extends AppCompatActivity implements
             }
 
             fragmentManager.beginTransaction().replace(R.id.content_frame, fragmentClass).commit();
+
+            if (mCurrentDrawerPosition == R.id.nav_chat){
+                mService.setChatListener((ChatFragment) fragmentClass);
+            } else if (mCurrentDrawerPosition == R.id.nav_statements){
+                mService.removeChatListener();
+            } else {
+                mService.removeChatListener();
+            }
         }
         mDrawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    private void navigateToHomeFragment(){
+    private void navigateToHomeFragment() {
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new StatementsFragment()).commit();
         mCurrentDrawerPosition = R.id.nav_statements;
         mNavigationView.getMenu().getItem(1).setChecked(true);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+            //Intent intent = new Intent(this.getContext(), EtractionService.class);
+            //getActivity().stopService(intent);
+        }
+    }
 }
