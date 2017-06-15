@@ -64,15 +64,38 @@ public class MainActivity extends AppCompatActivity implements
         mDrawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
-        mNavigationView.setNavigationItemSelectedListener(this);
-        if (savedInstanceState == null)
-            navigateToHomeFragment();
-
         //Service
         Intent intent = new Intent(this, EtractionService.class);
         startService(intent);
         bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
+        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView.setNavigationItemSelectedListener(this);
+        if (savedInstanceState == null) {
+            navigateToHomeFragment();
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (getIntent().getExtras() != null && getIntent().getExtras().containsKey(getString(R.string.notification_bundle_frag_key))){
+            int navId = getIntent().getExtras().getInt(getString(R.string.notification_bundle_frag_key));
+            mNavigationView.getMenu().performIdentifierAction(navId,0);
+            mNavigationView.setCheckedItem(navId);
+        }
+    }
+
+    /**
+     * If user is on chat or statements fragments and somehow listeners was not set, then the notifications will pop-up on notification bar.
+     * When user click it, the already opened activity will be reloaded.
+     * @param intent
+     */
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        finish();
+        startActivity(intent);
     }
 
     @Override
@@ -145,12 +168,17 @@ public class MainActivity extends AppCompatActivity implements
 
             fragmentManager.beginTransaction().replace(R.id.content_frame, fragmentClass).commit();
 
-            if (mCurrentDrawerPosition == R.id.nav_chat){
-                mService.setChatListener((ChatFragment) fragmentClass);
-            } else if (mCurrentDrawerPosition == R.id.nav_statements){
-                mService.removeChatListener();
-            } else {
-                mService.removeChatListener();
+            if (mService != null) {
+                if (mCurrentDrawerPosition == R.id.nav_chat) {
+                    mService.setChatListener((ChatFragment) fragmentClass);
+                    mService.removeStatementsListener();
+                } else if (mCurrentDrawerPosition == R.id.nav_statements) {
+                    mService.setStatementsListener((StatementsFragment) fragmentClass);
+                    mService.removeChatListener();
+                } else {
+                    mService.removeChatListener();
+                    mService.removeStatementsListener();
+                }
             }
         }
         mDrawer.closeDrawer(GravityCompat.START);
@@ -158,9 +186,8 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void navigateToHomeFragment() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, new StatementsFragment()).commit();
-        mCurrentDrawerPosition = R.id.nav_statements;
-        mNavigationView.getMenu().getItem(1).setChecked(true);
+        mNavigationView.getMenu().performIdentifierAction(R.id.nav_statements,0);
+        mNavigationView.setCheckedItem(R.id.nav_statements);
     }
 
     @Override

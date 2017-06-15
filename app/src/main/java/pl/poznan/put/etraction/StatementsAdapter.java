@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import pl.poznan.put.etraction.model.StatementMsg;
@@ -23,6 +24,14 @@ public class StatementsAdapter extends RecyclerView.Adapter<StatementsAdapter.St
     public void setStatementsData(List<StatementMsg> statementsList){
         mStatementsList = statementsList;
         notifyDataSetChanged();
+    }
+
+    public void addStatementMessage(StatementMsg message){
+        if (mStatementsList == null)
+            mStatementsList = new ArrayList<>();
+
+        mStatementsList.add(0, message);
+        notifyItemInserted(0);
     }
 
     /**

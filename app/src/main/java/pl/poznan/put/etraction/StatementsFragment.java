@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -20,6 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.IOException;
@@ -35,7 +37,9 @@ import pl.poznan.put.etraction.utilities.NetworkUtils;
  * Created by Marcin on 11.04.2017.
  */
 
-public class StatementsFragment extends BaseRecyclerViewFragment implements LoaderManager.LoaderCallbacks<List<StatementMsg>>{
+public class StatementsFragment extends BaseRecyclerViewFragment
+        implements LoaderManager.LoaderCallbacks<List<StatementMsg>>,
+        EtractionService.EtractionServiceListener{
 
     private static final String TAG = StatementsFragment.class.getSimpleName();
     //id of loader
@@ -168,5 +172,24 @@ public class StatementsFragment extends BaseRecyclerViewFragment implements Load
 
     @Override
     public void onLoaderReset(Loader<List<StatementMsg>> loader) {
+    }
+
+    @Override
+    public void newMessage(JsonElement msg) {
+        final StatementMsg statementMsg = new Gson().fromJson(msg, StatementMsg.StatementMessageDTO.class).getMessage();
+        //some notification sound
+        MediaPlayer player = MediaPlayer.create(this.getContext(), R.raw.you_wouldnt_believe);
+        final boolean isScrolledBottom = isLastItemDisplaying(mRecyclerView, false);
+        player.start();
+        this.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mStatementsAdapter.addStatementMessage(statementMsg);
+                // Do not scroll the list when user is watching previous messages
+                if (isScrolledBottom) {
+                    mRecyclerView.scrollToPosition(0);
+                }
+            }
+        });
     }
 }

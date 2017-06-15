@@ -184,12 +184,28 @@ public class EtractionService extends Service {
         mChatListener = null;
     }
 
+    public void removeStatementsListener() {
+        mStatementsListener = null;
+    }
+
+
     /**
      * Send notification
      * @param type
      */
     private void sendNotificationIfNotExists(NotificationType type) {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification notification = buildNotification(type);
+        notification.flags |= Notification.FLAG_ONLY_ALERT_ONCE;
+        notificationManager.notify(type.getId(), notification);
+    }
+
+    /**
+     * Build a notification object ready to send to the Android Notification Service
+     * @param type
+     * @return
+     */
+    private Notification buildNotification(NotificationType type) {
         String title;
         String text;
         if (type.equals(NotificationType.chatNotification)){
@@ -199,29 +215,25 @@ public class EtractionService extends Service {
             title = getResources().getString(R.string.statements_notification_title);
             text = getResources().getString(R.string.statements_notification_text);
         }
-        Notification notification = buildNotification(title, text);
-        notification.flags |= Notification.FLAG_ONLY_ALERT_ONCE;
-        notificationManager.notify(type.getId(), notification);
-    }
-
-    /**
-     * Build a notification object ready to send to the Android Notification Service
-     * @param title
-     * @param text
-     * @return
-     */
-    private Notification buildNotification(String title, String text) {
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_notif)
                         .setContentTitle(title)
                         .setContentText(text)
                         .setAutoCancel(true);
+
+
         // Creates an explicit intent for an Activity in your app
         Intent resultIntent = new Intent(this, MainActivity.class);
+        if (type.equals(NotificationType.chatNotification)){
+            resultIntent.putExtra(getResources().getString(R.string.notification_bundle_frag_key), R.id.nav_chat);
+        } else {
+            resultIntent.putExtra(getResources().getString(R.string.notification_bundle_frag_key), R.id.nav_statements);
+        }
 
         PendingIntent resultPendingIntent = PendingIntent.getActivity(this, 0, resultIntent,  PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(resultPendingIntent);
+
 
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         builder.setSound(alarmSound);

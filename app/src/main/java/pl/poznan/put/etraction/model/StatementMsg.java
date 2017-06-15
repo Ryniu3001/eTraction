@@ -43,4 +43,17 @@ public class StatementMsg extends BaseMsg{
     public void setContent(String content) {
         this.content = content;
     }
+
+    public static class StatementMessageDTO {
+        @SerializedName("statement")
+        private StatementMsg message;
+
+        public StatementMsg getMessage() {
+            return message;
+        }
+
+        public void setMessage(StatementMsg message) {
+            this.message = message;
+        }
+    }
 }

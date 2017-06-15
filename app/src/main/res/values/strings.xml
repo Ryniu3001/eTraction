@@ -24,6 +24,8 @@
     <string name="cant_resolve_intent">Brak programu do obsługi wideo.</string>
     <string name="settings_nickname_exists_error_msg">Wybrana nazwa użytkownika jest już zajęta. \nProszę wybrać inną.</string>
 
+    <string name="notification_bundle_frag_key" translatable="false">frag</string>
+
     <string name="movie_hour">godz.</string>
     <string name="movie_min">min.</string>
 

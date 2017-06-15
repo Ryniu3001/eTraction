@@ -27,10 +27,12 @@
 
     <item android:title="@string/drawer_menu_group_community">
         <menu>
-            <item
-                android:id="@+id/nav_chat"
-                android:icon="@drawable/ic_menu_chat"
-                android:title="@string/drawer_menu_chat" />
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/nav_chat"
+                    android:icon="@drawable/ic_menu_chat"
+                    android:title="@string/drawer_menu_chat" />
+            </group>
         </menu>
     </item>
 

@@ -65,6 +65,7 @@ public class ChatFragment extends BaseRecyclerViewFragment implements
         Bundle bundle = new Bundle();
         bundle.putInt(NetworkUtils.CHAT_PAGE_PARAM, 1);
         getLoaderManager().initLoader(CHAT_LOADER, bundle, this);
+        //TODO:  It should load the latest messages and then load more when user is scrolling up, not to bottom. First sorting in server have to be done.
     }
 
     @Override
@@ -85,6 +86,7 @@ public class ChatFragment extends BaseRecyclerViewFragment implements
         LinearLayoutManager layoutManager = new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false);
 
         mRecyclerView.setLayoutManager(layoutManager);
+
         mRecyclerView.setHasFixedSize(false);
 
         String nickname = PreferenceManager.getDefaultSharedPreferences(this.getContext()).getString(getString(R.string.pref_nickname_key), "");
@@ -108,7 +110,6 @@ public class ChatFragment extends BaseRecyclerViewFragment implements
         });
 
         setMessageSendAction();
-
     }
 
     private void setMessageSendAction() {
@@ -208,33 +209,18 @@ public class ChatFragment extends BaseRecyclerViewFragment implements
         final ChatMessageMsg chatMessage = new Gson().fromJson(msg, ChatMessageMsg.ChatMessageDTO.class).getMessage();
         //some notification sound
         MediaPlayer player = MediaPlayer.create(this.getContext(), R.raw.you_wouldnt_believe);
-        final boolean isScrolledBottom = isLastItemDisplaying(mRecyclerView);
+        final boolean isScrolledBottom = isLastItemDisplaying(mRecyclerView, true);
         player.start();
         this.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 mChatAdapter.addChatMessage(chatMessage);
+                // Do not scroll the list when user is watching previous messages
                 if (isScrolledBottom) {
-                    // Do not scroll the list when user is watching previous messages
                     mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
                 }
             }
         });
-    }
-
-    /**
-     * Check whether the last item in RecyclerView is being displayed or not
-     *
-     * @param recyclerView which you would like to check
-     * @return true if last position was Visible and false Otherwise
-     */
-    private boolean isLastItemDisplaying(RecyclerView recyclerView) {
-        if (recyclerView.getAdapter().getItemCount() != 0) {
-            int lastVisibleItemPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
-            if (lastVisibleItemPosition != RecyclerView.NO_POSITION && lastVisibleItemPosition == recyclerView.getAdapter().getItemCount() - 1)
-                return true;
-        }
-        return false;
     }
 
     public class SendMessageTask extends AsyncTask<String, Void, ChatMessageMsg> {
