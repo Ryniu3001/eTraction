@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 
-import pl.poznan.put.etraction.listener.PlayMediaListener;
+import pl.poznan.put.etraction.listener.PlayCamerMediaListener;
 import pl.poznan.put.etraction.model.CameraMsg;
 import pl.poznan.put.etraction.utilities.NetworkUtils;
 
@@ -70,7 +70,7 @@ public class CamerasFragment extends BaseRecyclerViewFragment implements LoaderM
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        mCamerasAdapter = new CamerasAdapter(new PlayMediaListener(this.getActivity()));
+        mCamerasAdapter = new CamerasAdapter(new PlayCamerMediaListener(this.getActivity()));
         mRecyclerView.setAdapter(mCamerasAdapter);
 
         mLoadingIndicator = (ProgressBar) view.findViewById(R.id.pb_common_loading_indicator);

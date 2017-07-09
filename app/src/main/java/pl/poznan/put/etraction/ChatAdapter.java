@@ -91,7 +91,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatMessageAda
         int width = displaymetrics.widthPixels; //Screen width in pixels
 
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) holder.bubble.getLayoutParams();
-        layoutParams.width =  new Double(CHAT_BUBBLE_WIDTH * width).intValue();
+        layoutParams.width =  Double.valueOf(CHAT_BUBBLE_WIDTH * width).intValue();
 
         int type = getItemViewType(position);
         if (type == TYPE_ME) {

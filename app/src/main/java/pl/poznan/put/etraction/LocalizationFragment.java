@@ -25,10 +25,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 
+import pl.poznan.put.etraction.helper.TouchableWrapper;
 import pl.poznan.put.etraction.permission.PermissionUtils;
+
+import static pl.poznan.put.etraction.R.id.map;
 
 
 //TODO: Pierwsze wejście czasami chrupie. Sprawdzić czy da się to jakoś zoptymalizować.
@@ -43,7 +44,8 @@ public class LocalizationFragment extends Fragment implements
         ActivityCompat.OnRequestPermissionsResultCallback,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener,
+        TouchableWrapper.UpdateMapAfterUserInterection {
 
     private static final String TAG = LocalizationFragment.class.getSimpleName();
 
@@ -64,6 +66,11 @@ public class LocalizationFragment extends Fragment implements
      */
     private LocationRequest mLocationRequest;
 
+    /**
+     * Determine if camera should follow user location
+     */
+    private boolean mFollowUser = true;
+
 
     @Nullable
     @Override
@@ -81,25 +88,27 @@ public class LocalizationFragment extends Fragment implements
         mLocationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(5000)
-                .setFastestInterval(1000);
+                .setFastestInterval(2000);
         return mMapView;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        SupportMapFragment fragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment fragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(map);
         fragment.getMapAsync(this);
+
+
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setOnMyLocationButtonClickListener(this);
-        //enableMyLocation();
+        enableMyLocation();
 
         // Add polylines and polygons to the map. This section shows just
         // a single polyline. Read the rest of the tutorial to learn more.
-        Polyline polyline1 = googleMap.addPolyline(new PolylineOptions()
+/*        Polyline polyline1 = googleMap.addPolyline(new PolylineOptions()
                 .clickable(true)
                 .add(
                         new LatLng(-35.016, 143.321),
@@ -107,11 +116,11 @@ public class LocalizationFragment extends Fragment implements
                         new LatLng(-34.364, 147.891),
                         new LatLng(-33.501, 150.217),
                         new LatLng(-32.306, 149.248),
-                        new LatLng(-32.491, 147.309)));
+                        new LatLng(-32.491, 147.309)));*/
 
         // Position the map's camera near Alice Springs in the center of Australia,
         // and set the zoom factor so most of Australia shows on the screen.
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-23.684, 133.903), 4));
+        //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-23.684, 133.903), 4));
 
         // Set listeners for click events.
        // googleMap.setOnPolylineClickListener(this);
@@ -123,6 +132,8 @@ public class LocalizationFragment extends Fragment implements
     @Override
     public boolean onMyLocationButtonClick() {
         // Return false so that we don't consume the event and the default behavior still occurs
+        Log.d(TAG, "FOLLOW USER = TRUE");
+        this.mFollowUser = true;
         return false;
     }
 
@@ -189,14 +200,20 @@ public class LocalizationFragment extends Fragment implements
 //        }
     }
 
+    /**
+     * Move camera to the user new location
+     * @param location
+     */
     private void handleNewLocation(Location location) {
         Log.d(TAG, location.toString());
         double currentLatitude = location.getLatitude();
         double currentLongitude = location.getLongitude();
 
         LatLng latLng = new LatLng(currentLatitude, currentLongitude);
-        float zoomLevel = 16.0f;
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
+        float zoomLevel = 13.0f;
+        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), zoomLevel));
+
     }
 
     @Override
@@ -211,8 +228,18 @@ public class LocalizationFragment extends Fragment implements
 
     @Override
     public void onLocationChanged(Location location) {
-        handleNewLocation(location);
+        if (mFollowUser) {
+            handleNewLocation(location);
+        }
     }
 
 
+    /**
+     * Calls when user touch te map
+     */
+    @Override
+    public void onUpdateMapAfterUserInterection() {
+        Log.d(TAG, "USER TOUCHED THE MAP!");
+        this.mFollowUser = false;
+    }
 }

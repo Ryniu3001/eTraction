@@ -1,0 +1,31 @@
+package pl.poznan.put.etraction.listener;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.support.v4.app.FragmentActivity;
+import android.widget.Toast;
+
+import pl.poznan.put.etraction.R;
+
+/**
+ * Created by Marcin on 05.07.2017.
+ */
+
+public class PlayCamerMediaListener implements IPlayMediaListener {
+
+    private FragmentActivity mFragmentActivity;
+    public PlayCamerMediaListener(FragmentActivity fragmentActivity){
+        mFragmentActivity = fragmentActivity;
+    }
+
+    @Override
+    public void playMedia(Uri file) {
+        Intent intent = new Intent(Intent.ACTION_VIEW );
+        intent.setDataAndType(file, "text/html");
+        if (intent.resolveActivity(mFragmentActivity.getPackageManager()) != null)
+            mFragmentActivity.startActivity(intent);
+        else
+            Toast.makeText(mFragmentActivity, R.string.cant_resolve_intent, Toast.LENGTH_SHORT).show();
+
+    }
+}
