@@ -2,13 +2,19 @@ package pl.poznan.put.etraction;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.Loader;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,10 +30,22 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import pl.poznan.put.etraction.helper.TouchableWrapper;
+import pl.poznan.put.etraction.model.TrackItemMsg;
+import pl.poznan.put.etraction.model.TrackMsg;
 import pl.poznan.put.etraction.permission.PermissionUtils;
+import pl.poznan.put.etraction.utilities.NetworkUtils;
 
 import static pl.poznan.put.etraction.R.id.map;
 
@@ -71,6 +89,58 @@ public class LocalizationFragment extends Fragment implements
      */
     private boolean mFollowUser = true;
 
+    private static final int TRACK_LOADER_ID = 5;
+
+    private LoaderManager.LoaderCallbacks<TrackMsg> trackLoaderListener = new LoaderManager.LoaderCallbacks<TrackMsg>() {
+        @Override
+        public Loader<TrackMsg> onCreateLoader(int id, Bundle args) {
+            return new AsyncTaskLoader<TrackMsg>(getContext()) {
+                TrackMsg mTrackResponse;
+
+                @Override
+                protected void onStartLoading() {
+                    if (mTrackResponse != null){
+                        Log.d(TAG, "DELIVERED TRACK");
+                        deliverResult(mTrackResponse);
+                    } else {
+                        //mLoadingIndicator.setVisibility(View.VISIBLE);
+                        Log.d(TAG, "LOADED TRACK");
+                        forceLoad();
+                    }
+                }
+
+                @Override
+                public TrackMsg loadInBackground() {
+
+                    try {
+                        URL statementsUrl = NetworkUtils.buildUrl(NetworkUtils.TRACK_BASE_URL);
+                        String trackJsonResults = NetworkUtils.getResponseFromHttpUrl(statementsUrl);
+                        TrackMsg trackMsg = new Gson().fromJson(trackJsonResults, TrackMsg.Track.class).getTrack();
+                        return trackMsg;
+                    } catch (IOException | JsonSyntaxException e) {
+                        Log.e(TAG, "Can not get track data!", e);
+                        return null;
+                    }
+                }
+
+                @Override
+                public void deliverResult(TrackMsg data) {
+                    mTrackResponse = data;
+                    super.deliverResult(data);
+                }
+            };
+        }
+
+        @Override
+        public void onLoadFinished(Loader<TrackMsg> loader, TrackMsg data) {
+            drawStations(data);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<TrackMsg> loader) {
+
+        }
+    };
 
     @Nullable
     @Override
@@ -96,8 +166,33 @@ public class LocalizationFragment extends Fragment implements
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         SupportMapFragment fragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(map);
         fragment.getMapAsync(this);
+    }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(TRACK_LOADER_ID, null, trackLoaderListener);
+    }
 
+    private TrackMsg getDummyTrack(){
+        TrackMsg trackMsg = new TrackMsg();
+        TrackItemMsg item1 = new TrackItemMsg(1, "Poznań Główny", 52.4021415, 16.9117642);
+        TrackItemMsg item2 = new TrackItemMsg(2, "Poznań Garbary", 52.416220, 16.938339);
+        TrackItemMsg item3 = new TrackItemMsg(3, "Poznań Wschód", 52.4192801, 16.9740941);
+        TrackItemMsg item4 = new TrackItemMsg(4, "Ligowiec", 52.1955529, 21.0303803);
+        TrackItemMsg item5 = new TrackItemMsg(5, "Kobylnica", 54.4405652, 16.9983887);
+        TrackItemMsg item6 = new TrackItemMsg(6, "Biskupice Wielkopolskie", 52.462578, 17.177662);
+        TrackItemMsg item7 = new TrackItemMsg(7, "Promno", 52.4503995, 17.2481292);
+        List<TrackItemMsg> trackItemMsgList = new ArrayList<>();
+        trackItemMsgList.add(item1);
+        trackItemMsgList.add(item2);
+        trackItemMsgList.add(item3);
+        trackItemMsgList.add(item4);
+        trackItemMsgList.add(item5);
+        trackItemMsgList.add(item6);
+        trackItemMsgList.add(item7);
+        trackMsg.setTrackItems(trackItemMsgList);
+        return trackMsg;
     }
 
     @Override
@@ -108,25 +203,39 @@ public class LocalizationFragment extends Fragment implements
 
         // Add polylines and polygons to the map. This section shows just
         // a single polyline. Read the rest of the tutorial to learn more.
-/*        Polyline polyline1 = googleMap.addPolyline(new PolylineOptions()
-                .clickable(true)
-                .add(
-                        new LatLng(-35.016, 143.321),
-                        new LatLng(-34.747, 145.592),
-                        new LatLng(-34.364, 147.891),
-                        new LatLng(-33.501, 150.217),
-                        new LatLng(-32.306, 149.248),
-                        new LatLng(-32.491, 147.309)));*/
 
-        // Position the map's camera near Alice Springs in the center of Australia,
-        // and set the zoom factor so most of Australia shows on the screen.
-        //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-23.684, 133.903), 4));
+        //TrackMsg trackMsg = getDummyTrack();
 
-        // Set listeners for click events.
-       // googleMap.setOnPolylineClickListener(this);
-       // googleMap.setOnPolygonClickListener(this);
+        /*        Circle circle = mMap.addCircle(new CircleOptions()
+                        .center(new LatLng(52.416220, 16.938339))
+                        .radius(20)
+                        .strokeColor(Color.RED)
+                        .fillColor(Color.BLACK));*/
 
 
+
+    }
+
+    private void drawStations(TrackMsg trackMsg) {
+        if (mMap == null){
+            throw new NullPointerException("Map is null! Can't draw stations");
+        }
+        int height = 20;
+        int width = 20;
+        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(R.drawable.map_marker, null);
+        Bitmap b = bitmapdraw.getBitmap();
+        Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
+        for (TrackItemMsg station : trackMsg.getTrackItems()) {
+            String snippet = getString(R.string.localizatoin_arrival) + ": " + DateFormat.getTimeFormat(getContext()).format(station.getArrivalTime()) +
+                    " | " + getString(R.string.localizatoin_departure) + ": " +
+                    DateFormat.getTimeFormat(getContext()).format(station.getDepartureTime());
+            mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(station.getLat(), station.getLon()))
+                    .title(station.getStopName())
+                    .snippet(snippet)
+                    .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
+        }
     }
 
     @Override
@@ -206,12 +315,7 @@ public class LocalizationFragment extends Fragment implements
      */
     private void handleNewLocation(Location location) {
         Log.d(TAG, location.toString());
-        double currentLatitude = location.getLatitude();
-        double currentLongitude = location.getLongitude();
-
-        LatLng latLng = new LatLng(currentLatitude, currentLongitude);
         float zoomLevel = 13.0f;
-        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoomLevel));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), zoomLevel));
 
     }

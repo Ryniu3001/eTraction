@@ -29,6 +29,9 @@
     <string name="movie_hour">godz.</string>
     <string name="movie_min">min.</string>
 
+    <string name="localizatoin_arrival">Przyjazd</string>
+    <string name="localizatoin_departure">Odjazd</string>
+
     <string name="pref_nickname_key" translatable="false">pref_nickname.</string>
     <string name="pref_nickname_label">Nazwa użytkownika</string>
 
