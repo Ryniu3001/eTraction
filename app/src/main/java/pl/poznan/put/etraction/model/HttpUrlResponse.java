@@ -8,14 +8,16 @@ import static java.net.HttpURLConnection.HTTP_OK;
  * Created by Marcin on 06.05.2017.
  */
 
-public class HttpUrlResponse {
+public class HttpUrlResponse <T> {
 
-    String body;
+    String jsonResponse;
     int responseCode;
     boolean isOk;
 
-    public HttpUrlResponse(String body, int code){
-        this.body = body;
+    T objectResponse;
+
+    public HttpUrlResponse(String jsonResponse, int code){
+        this.jsonResponse = jsonResponse;
         this.responseCode = code;
         if (code == HTTP_OK || code == HTTP_CREATED || code == HTTP_ACCEPTED)
             this.isOk = true;
@@ -23,12 +25,12 @@ public class HttpUrlResponse {
             this.isOk = false;
     }
 
-    public String getBody() {
-        return body;
+    public String getJsonResponse() {
+        return jsonResponse;
     }
 
-    public void setBody(String body) {
-        this.body = body;
+    public void setJsonResponse(String jsonResponse) {
+        this.jsonResponse = jsonResponse;
     }
 
     public int getResponseCode() {
@@ -45,5 +47,12 @@ public class HttpUrlResponse {
 
     public void setOk(boolean ok) {
         isOk = ok;
+    }
+    public T getObjectResponse() {
+        return objectResponse;
+    }
+
+    public void setObjectResponse(T objectResponse) {
+        this.objectResponse = objectResponse;
     }
 }

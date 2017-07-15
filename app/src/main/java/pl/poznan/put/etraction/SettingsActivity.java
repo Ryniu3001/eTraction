@@ -22,6 +22,7 @@ import java.net.URL;
 
 import pl.poznan.put.etraction.model.UserMsg;
 import pl.poznan.put.etraction.utilities.NetworkUtils;
+import pl.poznan.put.etraction.utilities.PrefUtility;
 
 public class SettingsActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceChangeListener {
 
@@ -39,6 +40,7 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
 
         mSaveIndicator = (ProgressBar) findViewById(R.id.pb_settings_save_indicator);
         mMessage = (TextView) findViewById(R.id.tv_settings_msg);
+
     }
 
     @Override
@@ -92,12 +94,12 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
             URL userUrl = NetworkUtils.buildUrl(NetworkUtils.USER_BASE_URL);
             try {
                 String method;
-                if (NetworkUtils.getResponseFromHttpUrl(userUrl, "dupa2").isOk())
+                if (NetworkUtils.getResponseFromHttpUrl(userUrl, MainActivity.deviceId).isOk())
                     method = "PUT";
                 else
                     method = "POST";
 
-                return NetworkUtils.saveDataToServer(userUrl, "dupa2", method, jsonObject).isOk();
+                return NetworkUtils.saveDataToServer(userUrl, method, jsonObject).isOk();
 
             } catch (IOException e) {
                 Log.e(TAG, "Exception while invoking service" ,e);
@@ -114,10 +116,7 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
             } else {
                 mMessage.setText(getResources().getString(R.string.settings_nickname_exists_error_msg));
                 //Restore previous nickname
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString(getResources().getString(R.string.pref_nickname_key), mActualNickname);
-                editor.commit();
+                PrefUtility.changeNickName(context, mActualNickname);
             }
         }
     }

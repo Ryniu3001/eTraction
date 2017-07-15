@@ -30,15 +30,15 @@ public class UserMsg {
         getUser().setUsername(username);
     }
 
-    private class User  extends BaseMsg {
+    public class User  extends BaseMsg {
         @SerializedName("username")
         private String username;
 
-        private String getUsername() {
+        public String getUsername() {
             return username;
         }
 
-        private void setUsername(String username) {
+        public void setUsername(String username) {
             this.username = username;
         }
     }

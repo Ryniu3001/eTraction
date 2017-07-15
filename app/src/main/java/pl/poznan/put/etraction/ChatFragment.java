@@ -1,5 +1,6 @@
 package pl.poznan.put.etraction;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,6 +42,7 @@ import pl.poznan.put.etraction.model.ChatMessageMsg;
 import pl.poznan.put.etraction.model.HttpUrlResponse;
 import pl.poznan.put.etraction.service.EtractionService;
 import pl.poznan.put.etraction.utilities.NetworkUtils;
+import pl.poznan.put.etraction.utilities.PrefUtility;
 
 /**
  * Created by Marcin on 01.05.2017.
@@ -65,7 +68,8 @@ public class ChatFragment extends BaseRecyclerViewFragment implements
         Bundle bundle = new Bundle();
         bundle.putInt(NetworkUtils.CHAT_PAGE_PARAM, 1);
         getLoaderManager().initLoader(CHAT_LOADER, bundle, this);
-        //TODO:  It should load the latest messages and then load more when user is scrolling up, not to bottom. First sorting in server have to be done.
+
+
     }
 
     @Override
@@ -204,9 +208,16 @@ public class ChatFragment extends BaseRecyclerViewFragment implements
     public void onLoaderReset(Loader<List<ChatMessageMsg>> loader) {
     }
 
+    /**
+     * New message from notification (WebSockets)
+     * @param msg
+     */
     @Override
     public void newMessage(JsonElement msg) {
         final ChatMessageMsg chatMessage = new Gson().fromJson(msg, ChatMessageMsg.ChatMessageDTO.class).getMessage();
+        if (chatMessage.getAuthor().equals(PreferenceManager.getDefaultSharedPreferences(this.getContext()).getString(getString(R.string.pref_nickname_key), ""))){
+            return;
+        }
         //some notification sound
         MediaPlayer player = MediaPlayer.create(this.getContext(), R.raw.you_wouldnt_believe);
         final boolean isScrolledBottom = isLastItemDisplaying(mRecyclerView, true);
@@ -223,7 +234,7 @@ public class ChatFragment extends BaseRecyclerViewFragment implements
         });
     }
 
-    public class SendMessageTask extends AsyncTask<String, Void, ChatMessageMsg> {
+    public class SendMessageTask extends AsyncTask<String, Void, HttpUrlResponse<ChatMessageMsg> > {
 
         @Override
         protected void onPreExecute() {
@@ -233,7 +244,8 @@ public class ChatFragment extends BaseRecyclerViewFragment implements
         }
 
         @Override
-        protected ChatMessageMsg doInBackground(String... params) {
+        protected HttpUrlResponse<ChatMessageMsg>  doInBackground(String... params) {
+
             String message = params[0];
             ChatMessageMsg msg = new ChatMessageMsg();
             msg.setContent(message);
@@ -244,24 +256,38 @@ public class ChatFragment extends BaseRecyclerViewFragment implements
             JsonObject jsonObject = (JsonObject) new JsonParser().parse(json);
             URL userUrl = NetworkUtils.buildUrl(NetworkUtils.CHAT_MESSAGES_BASE_URL);
 
-            HttpUrlResponse response = NetworkUtils.saveDataToServer(userUrl, "dupa2", "POST", jsonObject);
+            HttpUrlResponse<ChatMessageMsg> response = NetworkUtils.saveDataToServer(userUrl, "POST", jsonObject);
             if (response.isOk()) {
-                ChatMessageMsg newMeesage = new Gson().fromJson(response.getBody(), ChatMessageMsg.ChatMessageDTO.class).getMessage();
-                return newMeesage;
-            } else
-                return null;
+                ChatMessageMsg chatMessage = new Gson().fromJson(response.getJsonResponse(), ChatMessageMsg.ChatMessageDTO.class).getMessage();
+                response.setObjectResponse(chatMessage);
+            }
+            return response;
         }
 
         @Override
-        protected void onPostExecute(ChatMessageMsg chatMessageMsg) {
-            super.onPostExecute(chatMessageMsg);
+        protected void onPostExecute(HttpUrlResponse<ChatMessageMsg>  response) {
+            super.onPostExecute(response);
             mSendButton.setEnabled(true);
-            if (chatMessageMsg == null){
+            if (response.getObjectResponse() == null && response.getResponseCode() != HttpURLConnection.HTTP_UNAUTHORIZED){
                 if (mToast != null) mToast.cancel();
                 mToast = Toast.makeText(getContext(), getString(R.string.generic_error_msg), Toast.LENGTH_SHORT);
                 mToast.show();
+            } else if (response.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                //if any nickname is set - clear
+                PrefUtility.changeNickName(getContext(), null);
+                if (mToast != null) mToast.cancel();
+                mToast = Toast.makeText(getContext(), getString(R.string.nickname_empty), Toast.LENGTH_LONG);
+                mToast.show();
+                Intent startSettingsActivity = new Intent(getContext(), SettingsActivity.class);
+                startSettingsActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(startSettingsActivity);
+
             } else {
-                mChatAdapter.addChatMessage(chatMessageMsg);
+                final boolean isScrolledBottom = isLastItemDisplaying(mRecyclerView, true);
+                mChatAdapter.addChatMessage(response.getObjectResponse());
+                if (isScrolledBottom) {
+                    mRecyclerView.scrollToPosition(mChatAdapter.getItemCount() - 1);
+                }
             }
         }
     }

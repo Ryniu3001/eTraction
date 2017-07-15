@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements
     EtractionService mService;
     boolean mBound = false;
 
+    public static String deviceId;
+
     /**
      * Defines callbacks for service binding, passed to bindService()
      */
@@ -74,6 +76,8 @@ public class MainActivity extends AppCompatActivity implements
         if (savedInstanceState == null) {
             navigateToHomeFragment();
         }
+
+        deviceId = "asdqwdffess"/* Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID)*/;
     }
 
     @Override
@@ -84,6 +88,11 @@ public class MainActivity extends AppCompatActivity implements
             mNavigationView.getMenu().performIdentifierAction(navId,0);
             mNavigationView.setCheckedItem(navId);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     /**

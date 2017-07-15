@@ -16,6 +16,7 @@ import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.Scanner;
 
+import pl.poznan.put.etraction.MainActivity;
 import pl.poznan.put.etraction.model.HttpUrlResponse;
 
 import static java.net.HttpURLConnection.HTTP_CREATED;
@@ -130,8 +131,9 @@ public class NetworkUtils {
         }
     }
 
-    public static HttpUrlResponse saveDataToServer(URL url, String deviceId, String method, JsonObject jsonObject) {
+    public static HttpUrlResponse saveDataToServer(URL url, String method, JsonObject jsonObject) {
         HttpURLConnection urlConnection = null;
+        String deviceId = MainActivity.deviceId;
         int responseCode = 0;
         try {
             urlConnection = (HttpURLConnection) url.openConnection();
