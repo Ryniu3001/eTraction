@@ -113,6 +113,23 @@ public class ChatFragment extends BaseRecyclerViewFragment implements
             }
         });
 
+        /**
+         * Scrolls to last position after keyboard shows up
+         */
+        mRecyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                if (bottom < oldBottom) {
+                    mRecyclerView.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mRecyclerView.smoothScrollToPosition(mRecyclerView.getAdapter().getItemCount() - 1);
+                        }
+                    }, 100);
+                }
+            }
+        });
+
         setMessageSendAction();
     }
 
@@ -127,7 +144,6 @@ public class ChatFragment extends BaseRecyclerViewFragment implements
             }
         });
     }
-
 
     private List<ChatMessageMsg> createDumbData(){
         List<ChatMessageMsg> chatMessageList = new ArrayList<>();
