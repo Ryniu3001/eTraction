@@ -35,6 +35,7 @@ public class NetworkUtils {
     public final static String CHAT_MESSAGES_BASE_URL  = "https://etraction.herokuapp.com/api/v1/messages";
     public final static String USER_BASE_URL  = "https://etraction.herokuapp.com/api/v1/users";
     public final static String TRACK_BASE_URL = "https://etraction.herokuapp.com/api/v1/tracks";
+    public final static String GOOGLE_DIRECTION_API = "https://maps.googleapis.com/maps/api/directions/json";
 
     public final static String CHAT_PAGE_PARAM = "page";
     public final static String CHAT_MESSAGES_PER_PAGE_PARAM = "per_page";

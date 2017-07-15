@@ -3,6 +3,7 @@ package pl.poznan.put.etraction;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.os.Bundle;
@@ -10,10 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.Loader;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,19 +31,19 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import pl.poznan.put.etraction.callback.GoogleDirectionsCallback;
+import pl.poznan.put.etraction.callback.TrackLoaderCallback;
 import pl.poznan.put.etraction.helper.TouchableWrapper;
 import pl.poznan.put.etraction.model.TrackItemMsg;
 import pl.poznan.put.etraction.model.TrackMsg;
 import pl.poznan.put.etraction.permission.PermissionUtils;
-import pl.poznan.put.etraction.utilities.NetworkUtils;
 
 import static pl.poznan.put.etraction.R.id.map;
 
@@ -63,7 +61,9 @@ public class LocalizationFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         LocationListener,
-        TouchableWrapper.UpdateMapAfterUserInterection {
+        TouchableWrapper.UpdateMapAfterUserInterection,
+        TrackLoaderCallback.TrackLoaderResultListener,
+        GoogleDirectionsCallback.GoogleDirectionsCallbackListener {
 
     private static final String TAG = LocalizationFragment.class.getSimpleName();
 
@@ -90,57 +90,9 @@ public class LocalizationFragment extends Fragment implements
     private boolean mFollowUser = true;
 
     private static final int TRACK_LOADER_ID = 5;
-
-    private LoaderManager.LoaderCallbacks<TrackMsg> trackLoaderListener = new LoaderManager.LoaderCallbacks<TrackMsg>() {
-        @Override
-        public Loader<TrackMsg> onCreateLoader(int id, Bundle args) {
-            return new AsyncTaskLoader<TrackMsg>(getContext()) {
-                TrackMsg mTrackResponse;
-
-                @Override
-                protected void onStartLoading() {
-                    if (mTrackResponse != null){
-                        Log.d(TAG, "DELIVERED TRACK");
-                        deliverResult(mTrackResponse);
-                    } else {
-                        //mLoadingIndicator.setVisibility(View.VISIBLE);
-                        Log.d(TAG, "LOADED TRACK");
-                        forceLoad();
-                    }
-                }
-
-                @Override
-                public TrackMsg loadInBackground() {
-
-                    try {
-                        URL statementsUrl = NetworkUtils.buildUrl(NetworkUtils.TRACK_BASE_URL);
-                        String trackJsonResults = NetworkUtils.getResponseFromHttpUrl(statementsUrl);
-                        TrackMsg trackMsg = new Gson().fromJson(trackJsonResults, TrackMsg.Track.class).getTrack();
-                        return trackMsg;
-                    } catch (IOException | JsonSyntaxException e) {
-                        Log.e(TAG, "Can not get track data!", e);
-                        return null;
-                    }
-                }
-
-                @Override
-                public void deliverResult(TrackMsg data) {
-                    mTrackResponse = data;
-                    super.deliverResult(data);
-                }
-            };
-        }
-
-        @Override
-        public void onLoadFinished(Loader<TrackMsg> loader, TrackMsg data) {
-            drawStations(data);
-        }
-
-        @Override
-        public void onLoaderReset(Loader<TrackMsg> loader) {
-
-        }
-    };
+    private static final int GOOGLE_DIRECTIONS_LOADER_ID = 4;
+    private TrackLoaderCallback trackLoaderCallback;
+    private GoogleDirectionsCallback driectionsLoaderCallback;
 
     @Nullable
     @Override
@@ -171,7 +123,7 @@ public class LocalizationFragment extends Fragment implements
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(TRACK_LOADER_ID, null, trackLoaderListener);
+        getLoaderManager().initLoader(TRACK_LOADER_ID, null, new TrackLoaderCallback(this, getContext()));
     }
 
     private TrackMsg getDummyTrack(){
@@ -236,6 +188,16 @@ public class LocalizationFragment extends Fragment implements
                     .snippet(snippet)
                     .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)));
         }
+    }
+
+    private void drawRoute(String routeEncoded){
+        List<LatLng> list = PolyUtil.decode(routeEncoded);
+        PolylineOptions polylineOptions = new PolylineOptions().clickable(true);
+        for (LatLng item : list){
+            polylineOptions.add(item).clickable(true);
+        }
+        Polyline polyline1 = mMap.addPolyline(polylineOptions);
+        polyline1.setColor(Color.BLUE);
     }
 
     @Override
@@ -345,5 +307,31 @@ public class LocalizationFragment extends Fragment implements
     public void onUpdateMapAfterUserInterection() {
         Log.d(TAG, "USER TOUCHED THE MAP!");
         this.mFollowUser = false;
+    }
+
+    @Override
+    public void onTrackLoad(TrackMsg data) {
+        if (data != null && data.getTrackItems() != null){
+            drawStations(data);
+            int size = data.getTrackItems().size();
+            if (size > 1) {
+                LatLng from = new LatLng(data.getTrackItems().get(0).getLat(), data.getTrackItems().get(0).getLon());
+                LatLng to = new LatLng(data.getTrackItems().get(size - 1).getLat(), data.getTrackItems().get(size - 1).getLon());
+                driectionsLoaderCallback = new GoogleDirectionsCallback(this, getContext(), from, to);
+                getLoaderManager().initLoader(GOOGLE_DIRECTIONS_LOADER_ID, null, driectionsLoaderCallback);
+            }
+        } else {
+            Log.w(TAG, "Track data is null!");
+        }
+
+    }
+
+    @Override
+    public void onRouteLoad(String route) {
+        if (route != null) {
+            drawRoute(route);
+        } else {
+            Log.w(TAG, "Route is null!");
+        }
     }
 }
