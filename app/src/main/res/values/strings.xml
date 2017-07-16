@@ -13,11 +13,17 @@
     <string name="drawer_menu_cameras">Kamery</string>
     <string name="drawer_menu_group_community">Społeczność</string>
     <string name="drawer_menu_chat">Chat</string>
+    <string name="drawer_menu_user_movies">Filmiki</string>
     <string name="drawer_menu_restaurant_menu">Menu</string>
+
+    <!-- TABS -->
+    <string name="user_own_videos_tab">Moje nagrania</string>
+    <string name="users_videos_tab">Wszystkie</string>
 
     <!--    Permissions    -->
     <string name="location_permission_denied">Aplikacja wymaga pozwolenia na lokalizację aby wskazać położenie urządzenia na mapie. Spróbuj ponownie i zezwól na lokalizację by w pełni korzystać z aplikacji.\nJeśli uprawnienie zostało odebrane na stałe, może zostać przywrócone w ustawieniach systemu (Ustawienia &gt; Aplikacje &gt; eTraction</string>
     <string name="permission_required_toast">Uprawnienie do lokalizacji urządzenia jest wymagane.</string>
+    <string name="permission_required_read_storage_toast">Uprawnienie do odczytu pamięci masowej urządzenia jest wymagane w celu dostępu do nagranych filmów.</string>
 
     <!-- Errors -->
     <string name="generic_error_msg">Wystąpił błąd komunikacji. Proszę spróbować później.</string>
@@ -43,4 +49,8 @@
     <string name="chat_notification_text">Pojawiły się nowe wiadomości na czacie. Sprawdź!</string>
     <string name="statements_notification_title">ETraction - komunikat!</string>
     <string name="statements_notification_text">Nowy komunikat</string>
+
+    <string name="user_video_remove_confirmation">Film usunięty</string>
+
+    <string name="menu_delete">Usuń</string>
 </resources>

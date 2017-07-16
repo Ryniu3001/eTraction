@@ -98,7 +98,7 @@ public class MoviesFragment extends BaseRecyclerViewFragment implements LoaderMa
             @Override
             public List<MovieMsg> loadInBackground() {
                 try {
-                    URL camerasUrl = NetworkUtils.buildUrl(NetworkUtils.MOVIES_BASE_URL);
+                    URL camerasUrl = NetworkUtils.buildUrl(NetworkUtils.USERS_VIDEOS_BASE_URL);
                     String moviesGetResults = NetworkUtils.getResponseFromHttpUrl(camerasUrl);
                     return new Gson().fromJson(moviesGetResults, MovieMsg.MoviesMsg.class).getMovies();
                 } catch (IOException | JsonSyntaxException e) {

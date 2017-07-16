@@ -67,13 +67,6 @@ public class LocalizationFragment extends Fragment implements
 
     private static final String TAG = LocalizationFragment.class.getSimpleName();
 
-    /**
-     * Request code for location permission request.
-     *
-     * @see #onRequestPermissionsResult(int, String[], int[])
-     */
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-
     private GoogleMap mMap;
     /**
      * Allows to control Google Maps (e.g. zoom, camera position) and update localization
@@ -213,7 +206,7 @@ public class LocalizationFragment extends Fragment implements
      */
     private void enableMyLocation() {
         if (ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            PermissionUtils.requestPermission(this, LOCATION_PERMISSION_REQUEST_CODE, Manifest.permission.ACCESS_FINE_LOCATION);
+            PermissionUtils.requestPermission(this, PermissionUtils.LOCATION_PERMISSION_REQUEST_CODE, Manifest.permission.ACCESS_FINE_LOCATION);
         } else if (mMap != null) {
             // Access to the location has been granted to the app.
             mMap.setMyLocationEnabled(true);
@@ -223,7 +216,7 @@ public class LocalizationFragment extends Fragment implements
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode != LOCATION_PERMISSION_REQUEST_CODE) {
+        if (requestCode != PermissionUtils.LOCATION_PERMISSION_REQUEST_CODE) {
             return;
         }
 

@@ -32,6 +32,11 @@
                     android:id="@+id/nav_chat"
                     android:icon="@drawable/ic_menu_chat"
                     android:title="@string/drawer_menu_chat" />
+
+                <item
+                    android:id="@+id/nav_user_movies"
+                    android:icon="@drawable/ic_user_movies"
+                    android:title="@string/drawer_menu_user_movies" />
             </group>
         </menu>
     </item>

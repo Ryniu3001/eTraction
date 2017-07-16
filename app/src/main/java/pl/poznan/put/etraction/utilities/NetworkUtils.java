@@ -37,6 +37,8 @@ public class NetworkUtils {
     public final static String USER_BASE_URL  = "https://etraction.herokuapp.com/api/v1/users";
     public final static String TRACK_BASE_URL = "https://etraction.herokuapp.com/api/v1/tracks";
     public final static String GOOGLE_DIRECTION_API = "https://maps.googleapis.com/maps/api/directions/json";
+    public final static String USERS_VIDEOS_BASE_URL = "https://etraction.herokuapp.com/api/v1/user_videos";
+    public final static String USER_OWN_VIDEOS_BASE_URL = "https://etraction.herokuapp.com/api/v1/user_videos/my_videos";
 
     public final static String CHAT_PAGE_PARAM = "page";
     public final static String CHAT_MESSAGES_PER_PAGE_PARAM = "per_page";
@@ -51,8 +53,12 @@ public class NetworkUtils {
      * Build the URL used to query.
      * @return URL to use to query
      */
-    public static URL buildUrl(String baseUrl){         //Poki mamy URLe bez zadnych paramerow, mozna je bydowac jedną metoda
-        Uri builtUri = Uri.parse(baseUrl).buildUpon().build();
+    public static URL buildUrl(String baseUrl, String pathParam) {
+        Uri.Builder uriBuilder = Uri.parse(baseUrl).buildUpon();
+        if (pathParam != null && !pathParam.isEmpty()){
+            uriBuilder.appendPath(pathParam);
+        }
+        Uri builtUri = uriBuilder.build();
         URL url = null;
         try {
             url = new URL(builtUri.toString());
@@ -62,6 +68,11 @@ public class NetworkUtils {
 
         return url;
     }
+
+    public static URL buildUrl(String baseUrl) {
+        return buildUrl(baseUrl, null);
+    }
+
     //TODO: Refaktor, mozna scalic w jedna metode?
     public static URL buildUrlWithParams(String baseUrl, Map<String, String> params){
         Uri.Builder uriBuilder = Uri.parse(baseUrl).buildUpon();
@@ -118,7 +129,7 @@ public class NetworkUtils {
     }
 
     @Nullable
-    private static String inputStreamToString(InputStream in) {
+    public static String inputStreamToString(InputStream in) {
         if (in == null) return null;
         Scanner scanner = new Scanner(in);
         scanner.useDelimiter("\\A");
@@ -140,17 +151,19 @@ public class NetworkUtils {
             urlConnection.setRequestMethod(method);
             urlConnection.setRequestProperty(REQUEST_HEADER_DEVICE_ID_PARAM, deviceId);
             urlConnection.setRequestProperty("Content-Type", "application/json");
-            urlConnection.setDoOutput(true);
             urlConnection.setDoInput(true);
-            urlConnection.setFixedLengthStreamingMode(jsonObject.toString().getBytes().length);
 
-            OutputStreamWriter streamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
-            streamWriter.write(jsonObject.toString());
-            streamWriter.close();
+            if (jsonObject != null) {
+                urlConnection.setDoOutput(true);
+                urlConnection.setFixedLengthStreamingMode(jsonObject.toString().getBytes().length);
+                OutputStreamWriter streamWriter = new OutputStreamWriter(urlConnection.getOutputStream());
+                streamWriter.write(jsonObject.toString());
+                streamWriter.close();
+            }
 
             responseCode = urlConnection.getResponseCode();
             if (responseCode == HTTP_CREATED || responseCode == HTTP_OK) {
-                Log.d(TAG, "Successful " + method + ": " + jsonObject.toString());
+                Log.d(TAG, "Successful " + method + ": " + (jsonObject != null ? jsonObject.toString() : "NO INPUT"));
                 return new HttpUrlResponse(inputStreamToString(urlConnection.getInputStream()), responseCode);
             } else {
                 Log.d(TAG, "CODE: " + responseCode);

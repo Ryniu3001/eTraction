@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements
             navigateToHomeFragment();
         }
 
-        deviceId = "asdqwdffess"/* Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID)*/;
+        deviceId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
     @Override
@@ -169,6 +170,9 @@ public class MainActivity extends AppCompatActivity implements
                     break;
                 case R.id.nav_chat:
                     fragmentClass = new ChatFragment();
+                    break;
+                case R.id.nav_user_movies:
+                    fragmentClass = new UserVideosTabsFragment();
                     break;
                 default:
                     fragmentClass = new StatementsFragment();

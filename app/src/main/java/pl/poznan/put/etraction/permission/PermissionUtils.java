@@ -17,6 +17,9 @@ import pl.poznan.put.etraction.R;
  */
 public abstract class PermissionUtils {
 
+    public static final int READ_STOREAGE_PERMISSION_REQUEST_CODE = 2;
+    public static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+
     //Chcąc dorobić informowanie użytkownika dlaczego uprawnienie jest istotne można wzorować się na
     // https://github.com/googlemaps/android-samples/blob/master/ApiDemos/app/src/main/java/com/example/mapdemo/PermissionUtils.java
 
