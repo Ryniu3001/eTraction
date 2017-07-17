@@ -161,6 +161,7 @@ public class UsersVideosAdapter extends RecyclerView.Adapter<UsersVideosAdapter.
             String id = params[0];
             URL requestUrl = NetworkUtils.buildUrl(NetworkUtils.USERS_VIDEOS_BASE_URL, id);
             HttpUrlResponse<String> response = NetworkUtils.saveDataToServer(requestUrl, "DELETE", null);
+            response.setObjectResponse(id);
             return response;
         }
 

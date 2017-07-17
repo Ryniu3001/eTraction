@@ -2,6 +2,7 @@ package pl.poznan.put.etraction;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -15,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +24,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,10 +33,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -145,30 +145,30 @@ public class UsersVideosFragment extends BaseRecyclerViewFragment implements
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Toast.makeText(getContext(), String.valueOf(resultCode), Toast.LENGTH_LONG).show();
         if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == Activity.RESULT_OK){
             Uri videoUri = data.getData();
-            //byte [] fileBytesArray = fileToByteArray(videoUri);
-            SendVideoTask task = new SendVideoTask();
-            task.execute(getRealPathFromUri(videoUri));
+            askAboutTitle(videoUri);
         }
     }
 
-    private byte [] fileToByteArray(Uri fileUri){
-        File file = new File(getRealPathFromUri(fileUri));
-        int size = (int)file.length();
-        byte [] bytes = new byte[size];
-        try {
-            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
-            buf.read(bytes, 0, bytes.length);
-            buf.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-        return bytes;
+    private void askAboutTitle(final Uri videoUri){
+        final EditText title = new EditText(this.getContext());
+        new AlertDialog.Builder(this.getContext())
+                .setMessage("Podaj tytuł filmu (od 2 do 50 znaków)")
+                .setCancelable(false)
+                .setView(title)
+                .setPositiveButton("Zatwierdź", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        if (title.getText().toString().length() < 2 || title.getText().toString().length() > 50){
+                            dialog.dismiss();
+                            askAboutTitle(videoUri);
+                        } else {
+                            SendVideoTask task = new SendVideoTask();
+                            task.execute(getRealPathFromUri(videoUri), title.getText().toString());
+                        }
+                    }
+                })
+                .show();
     }
 
     public String getRealPathFromUri(Uri uri){
@@ -248,13 +248,14 @@ public class UsersVideosFragment extends BaseRecyclerViewFragment implements
 
         @Override
         protected void onPreExecute() {
-            super.onPreExecute();
+            mLoadingIndicator.setVisibility(View.VISIBLE);
         }
 
         @Override
         protected UserVideoMsg doInBackground(String... params) {
 
             String path = params[0];
+            String title = params[1];
 
             String charset = "UTF-8";
             String requestURL = NetworkUtils.USERS_VIDEOS_BASE_URL;
@@ -262,7 +263,7 @@ public class UsersVideosFragment extends BaseRecyclerViewFragment implements
             MultipartUtility multipart = null;
             try {
                 multipart = new MultipartUtility(requestURL, charset);
-                multipart.addFormField("user_video[title]", "dupaaaaaa");
+                multipart.addFormField("user_video[title]", title);
                 multipart.addFilePart("user_video[video]", new File(path));
                 String response = multipart.finish(); // response from server.
                 JsonParser parser = new JsonParser();
@@ -279,6 +280,7 @@ public class UsersVideosFragment extends BaseRecyclerViewFragment implements
         @Override
         protected void onPostExecute(UserVideoMsg response) {
             super.onPostExecute(response);
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
             mVideosAdapter.addVideo(response);
         }
     }
