@@ -2,6 +2,7 @@ package pl.poznan.put.etraction;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -24,6 +25,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -153,22 +155,44 @@ public class UsersVideosFragment extends BaseRecyclerViewFragment implements
 
     private void askAboutTitle(final Uri videoUri){
         final EditText title = new EditText(this.getContext());
-        new AlertDialog.Builder(this.getContext())
+        AlertDialog alertDialog = new AlertDialog.Builder(this.getContext())
                 .setMessage("Podaj tytuł filmu (od 2 do 50 znaków)")
                 .setCancelable(false)
                 .setView(title)
-                .setPositiveButton("Zatwierdź", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        if (title.getText().toString().length() < 2 || title.getText().toString().length() > 50){
-                            dialog.dismiss();
-                            askAboutTitle(videoUri);
-                        } else {
-                            SendVideoTask task = new SendVideoTask();
-                            task.execute(getRealPathFromUri(videoUri), title.getText().toString());
-                        }
-                    }
-                })
+                .setPositiveButton("Zatwierdź", null)
                 .show();
+        Button theButton = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        theButton.setOnClickListener(new CustomListener(alertDialog, title, videoUri));
+    }
+/*new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int id) {
+            if (title.getText().toString().length() < 2 || title.getText().toString().length() > 50){
+                Toast.makeText(getContext(), "Invalid data", Toast.LENGTH_SHORT).show();
+            } else {
+                SendVideoTask task = new SendVideoTask();
+                task.execute(getRealPathFromUri(videoUri), title.getText().toString());
+            }
+        }
+    }*/
+    class CustomListener implements View.OnClickListener {
+        private final Dialog dialog;
+        private EditText title;
+        private Uri videoUri;
+        public CustomListener(Dialog dialog, EditText title, Uri videoUri) {
+            this.dialog = dialog;
+            this.title = title;
+            this.videoUri = videoUri;
+        }
+        @Override
+        public void onClick(View v) {
+            if (title.getText().toString().length() < 2 || title.getText().toString().length() > 50){
+                Toast.makeText(getContext(), "Niepoprawne dane", Toast.LENGTH_SHORT).show();
+            } else {
+                SendVideoTask task = new SendVideoTask();
+                task.execute(getRealPathFromUri(videoUri), title.getText().toString());
+                dialog.dismiss();
+            }
+        }
     }
 
     public String getRealPathFromUri(Uri uri){
